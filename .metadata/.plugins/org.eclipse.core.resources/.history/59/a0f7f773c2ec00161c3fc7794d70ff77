@@ -1,0 +1,9 @@
+package KKGame;
+
+public abstract class GameStatus {
+	public static Integer InProgress = 1;
+	public static Integer Finished = 2;
+	public static Integer Player1Wins = 2;
+	public static Integer Player2Wins = 2;
+	public static Integer Drawn = 2;
+}

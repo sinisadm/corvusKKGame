@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Extract method &apos;protected Game CreateGameInstanceWithCurrentPlayers(Integer GameId)&apos; from &apos;KKGame.KKGameController.New()&apos; to &apos;KKGame.KKGameController&apos;&#x0D;&#x0A;- Original project: &apos;gs-rest-service-complete&apos;&#x0D;&#x0A;- Method name: &apos;CreateGameInstanceWithCurrentPlayers&apos;&#x0D;&#x0A;- Destination type: &apos;KKGame.KKGameController&apos;&#x0D;&#x0A;- Declared visibility: &apos;protected&apos;&#x0D;&#x0A;- Generate method comment" comments="true" description="Extract method &apos;CreateGameInstanceWithCurrentPlayers&apos;" destination="0" exceptions="false" flags="786434" id="org.eclipse.jdt.ui.extract.method" input="/src\/main\/java&lt;KKGame{KKGameController.java" name="CreateGameInstanceWithCurrentPlayers" replace="false" selection="3470 141" stamp="1486432870544" version="1.0" visibility="4"/>
+</session>

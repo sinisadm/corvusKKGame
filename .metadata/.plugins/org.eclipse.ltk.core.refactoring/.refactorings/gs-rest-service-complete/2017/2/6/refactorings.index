@@ -1,0 +1,5 @@
+1486308783750	Extract method '_parseurl2players'
+1486320108794	Extract method 'GetLastGame'
+1486326089064	Extract method '_fillCells2Combination'
+1486329686543	Rename resource 'ssssss'
+1486329720334	Rename resource 'GamePlayers'
