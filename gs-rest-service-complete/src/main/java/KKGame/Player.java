@@ -4,9 +4,9 @@ public class Player {
 
     public final String Name;
     
-    public final Integer Wins;
-    public final Integer Lose;
-    public final Integer Draw;
+    public Integer Wins;
+    public Integer Lose;
+    public Integer Draw;
 
 
     public Player(String name)
@@ -21,6 +21,22 @@ public class Player {
     public String toString() {
         return this.Name;
     }
+
+
+	public void Winn() {
+		this.Wins++;
+		
+	}
+
+	public void Lose() {
+		this.Lose++;
+		
+	}
+
+	public void Draw() {
+		this.Draw++;
+		
+	}
 
 
 	

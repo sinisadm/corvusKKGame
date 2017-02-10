@@ -12,6 +12,11 @@ public class gameBean {
 	private Boolean isComputerPlaying = false;
 	
 
+
+	public Boolean getIsComputerPlaying() {
+		return  this._player1.Name.equals("computer") || this._player2.Name.equals("computer");
+	}
+
 	public List<Game> Statistics = new ArrayList<Game>();
 	public List<Player> Players = new ArrayList<Player>();
 	
@@ -37,6 +42,10 @@ public class gameBean {
 		return this.Statistics.get(this.Statistics.lastIndexOf(Statistics) );
 	}
 
+	public Game GetGameById(Integer gameId) {
+		return this.Statistics.get(gameId);
+	}
+
 	protected Game getGameById(Integer id) {
 		Game game = null;
 		
@@ -48,6 +57,10 @@ public class gameBean {
 		return (game != null) ? game : null;
 	}
 
+	 
+	
+	
+	
 	/**
 	 * @param first
 	 * @param second
@@ -122,4 +135,15 @@ public class gameBean {
 		return new Player(name);
 	}
 
+	/**
+	 * @param GameId
+	 * @return
+	 */
+	protected Game CreateGameInstanceWithCurrentPlayers(Integer GameId) {
+		Game game;
+		game = new Game(this._player1, this._player2, GameId);
+		game.CurrentPlayer = this.WhoPlaysFirst();
+		this.Statistics.add(game);
+		return game;
+	}
 }

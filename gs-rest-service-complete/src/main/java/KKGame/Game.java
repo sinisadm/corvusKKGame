@@ -5,35 +5,37 @@ import java.util.List;
 
 public class Game {
 
-	private final Integer GameId;
-	
-	public final Player Player1;
-	public final Player Player2;
+	public final Integer GameId;
+
+/*	public Integer getId() {
+		return GameId;
+	}
+	*/
+	private final Player Player1;
+	private final Player Player2;
 	public Integer Status;
 	
-	public Player CurrentPlayer = null;
+	protected Player CurrentPlayer = null;
 
-	private List<Cell> GameCells = new ArrayList<Cell>();
+	public List<Cell> Game = new ArrayList<Cell>();
 
 
-	/*
-	 * 
-	 * 	Constructors
-	 * 
-	 * */
+	/* *	Constructors	* */
 
 	public Game(String first) {
 		this.GameId = -1;
 		this.Player1 = new Player(first);
 		this.Player2 = new Player("Computer");
-		this.Status = GameStatus.InProgress;
+		_gameInProggress();
+		System.out.println("Game created, Id: " + this.GameId + "\\n Prvi igrač: " + first + ", drugi igrač: computer" );	
 	}
 
 	public Game(String first, String second) {
 		this.GameId = -1;
 		this.Player1 = new Player(first);
 		this.Player2 = new Player(second);
-		this.Status = GameStatus.InProgress;
+		_gameInProggress();
+		System.out.println("Game created, Id: " + this.GameId + "\\n Prvi igrač: " + this.Player1.Name + ", drugi igrač: " + this.Player2.Name );	
 	}
 
 	public Game(Player _player1, Player _player2) {
@@ -41,7 +43,9 @@ public class Game {
 		this.GameId = -1;
 		this.Player1 = _player1;
 		this.Player2 = _player2;
-		this.Status = GameStatus.InProgress;
+		_gameInProggress();
+
+		System.out.println("Game created, Id: " + this.GameId + "\\n Prvi igrač: " + this.Player1.Name + ", drugi igrač: " + this.Player2.Name );	
 	}
 
 	public Game(Player _player1, Player _player2, Integer gameId) {
@@ -49,31 +53,29 @@ public class Game {
 		this.GameId = gameId;
 		this.Player1 = _player1;
 		this.Player2 = _player2;
-		this.Status = GameStatus.InProgress;
+		_gameInProggress();
 
 		System.out.println("Kreirana igra ");
+		System.out.println("Game created, Id: " + this.GameId + "\\n Prvi igrač: " + this.Player1.Name + ", drugi igrač: " + this.Player2.Name );	
 	}
 
-	/*   //Constructors
-	 * 
-	 * 	
-	 * Publiv methods
-	 * */ 
+	/* *	Public methods	* */ 
 	public String toString() {
-		return this.Player1 + " : " + this.Player2 + this.GameId.toString();
+		Integer size =  this.Game.size();
+		return this.Player1 + " : " + this.Player2 + this.GameId.toString()
+		+ "\\n Zauzetu: " + size.toString();
+	
 	}
 
-	public Integer getId() {
-		return GameId;
-	}
-
+	
 	public Boolean Play(Player player, Cell cell) {
-		
-		if (this._checkCellsLimit())
-			return true;
-
-		this.GameCells.add(cell);
-
+		Boolean moved = false;
+		if (!this._checkCellsLimit() && !this._checkIfCellsCantBeAdded(this.Game, cell))
+		{	
+			moved = true;
+			this.Game.add(cell);
+			System.out.println("Added: " + cell.toString() );	
+		}
 		Boolean isGameOver = this._isSomeoneWin();
 		
 		if(isGameOver)
@@ -82,9 +84,9 @@ public class Game {
 				this.Status = GameStatus.Player1Wins;
 			else
 				this.Status = GameStatus.Player2Wins;
-				
-			
 		}
+		Integer size = this.Game.size();
+		System.out.println("Game played, Id: " + this.GameId + "\\n Prvi igrač: " + this.Player1.Name + ", drugi igrač: " + this.Player2.Name + "\\n polja: " + size );	
 		return isGameOver;
 
 	}
@@ -99,9 +101,19 @@ public class Game {
 	 * Private methods
 	 * */ 
 
-	
+	private Player _getOppositePlayer()
+	{
+		return (this.CurrentPlayer == this.Player1) ? this.Player2 : this.Player1;
+	}
 	private Boolean _checkCellsLimit() {
-		return (this.GameCells.size() >= 9) ? true : false;
+	
+		return (this.Game.size() >= 9) ? true : false;
+	}
+	
+	private Boolean _checkIfCellsCantBeAdded(final List<Cell> list, final Cell cell) {
+
+	    return list.stream().filter(c -> c.getRow().equals(cell.getRow()) && c.getColumn().equals(cell.getColumn())).findFirst().isPresent();
+	
 	}
 
 	private Boolean _isSomeoneWin() {
@@ -118,14 +130,48 @@ public class Game {
 		if(combination == null)
 			return  returnValue;
 		
-		returnValue = !combination.IsCurrentPlayerTheWinner(this.CurrentPlayer);
-		
-		if(returnValue && this.GameCells.size() == 9)
-			this.Status = GameStatus.Finished;
+		Boolean winn = !combination.IsPlayerTheWinner(this.CurrentPlayer);
+		Boolean filled = this.Game.size() == 9;
+		if(winn)
+		{
+			this.CurrentPlayer.Winn();
+			this._getOppositePlayer().Lose();
+			_gameFinished();
+			return returnValue;
+		}
+		else if(filled)
+		{
+			this.CurrentPlayer.Draw();;
+			this._getOppositePlayer().Draw();;
+			_gameFinished();
+			return returnValue;
+		}
 		else
-			this.Status = GameStatus.InProgress;
-			
-		return returnValue;
+		{		
+			this._switchPlayers();
+			return returnValue;
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void _gameInProggress() {
+		this.Status = GameStatus.InProgress;
+	}
+
+	/**
+	 * 
+	 */
+	private void _gameFinished() {
+		this.Status = GameStatus.Finished;
+	}
+
+	private void _switchPlayers() {
+
+			System.out.println("Trenutni igrač:  " + this.CurrentPlayer.toString());
+		this.CurrentPlayer = (this.CurrentPlayer == this.Player1) ? this.Player2 : this.Player1;
+		System.out.println("nakon zamjene je igrač:  " + this.CurrentPlayer.toString());
 	}
 
 	/**
@@ -142,7 +188,7 @@ public class Game {
 		Combination diagonal1 = new Combination();
 		Combination diagonal2 = new Combination();
 		
-		for (Cell cell : this.GameCells) {
+		for (Cell cell : this.Game) {
 			if (cell.Row == 1) {
 				rows1.Cells.add(cell);
 				if (cell.Column == 1) {
@@ -157,7 +203,6 @@ public class Game {
 					columns3.Cells.add(cell);
 					diagonal2.Cells.add(cell);
 				}
-
 			}
 			if (cell.Row == 2) {
 				rows2.Cells.add(cell);

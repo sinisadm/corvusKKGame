@@ -2,6 +2,11 @@ package KKGame;
 
 public class Cell {
 
+	protected Integer GameId;
+	protected Player Player;
+	protected Integer Row;
+	protected Integer Column;
+	
 	public Cell(Integer row, Integer column) {
 		// TODO Auto-generated constructor stub
 		this.Row = row;
@@ -26,10 +31,13 @@ public class Cell {
 		this.Player = currentPlayer;
 	}
 
-	protected Integer Row;
-	protected Integer Column;
-	protected Integer GameId;
-	protected Player Player;
-	
+
+	public Integer getRow() {
+		return Row;
+	}
+	public Integer getColumn() {
+		return Column;
+	}
+
 	
 }

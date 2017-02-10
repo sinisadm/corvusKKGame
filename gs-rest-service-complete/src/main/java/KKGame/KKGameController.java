@@ -6,21 +6,32 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.WebRequest;
+
+import java.util.List;
 
 @RestController
-
 @RequestMapping("/game")
 public class KKGameController {
 
 	private static final String template = "Hello, %s!";
 	private final AtomicLong counter = new AtomicLong();
-	private WebRequest webRequest;
+	private HttpServletRequest webRequest;
 	public gameBean GameProcessor = new gameBean();
 	public Integer cnt = 1;
+	
+	
 
 	/************************************************************************
+	 * game/new?first={player1}&second={player2} 
+	 * game/new?first=Sinisa  i game/new?second=Sinisa 
+	 * game/play?gameId={id}&row={row_number}&column={column_number}
+	 * game/status?gameId={id}
+	 * stats 
+	 * 
+	 * 
+	 * 
 	 * 
 	 * Play method
 	 * 
@@ -28,8 +39,9 @@ public class KKGameController {
 	 * 
 	 * 
 	 ***********************************************************************/
+
 	@RequestMapping(value = "/play", method = RequestMethod.GET, produces = { "application/json" })
-	public String Play(HttpServletRequest request) {
+	public Game Play(HttpServletRequest request ) {
 		Boolean ReturnValue = false;
 		// Get required arguments
 		
@@ -44,21 +56,63 @@ public class KKGameController {
 		String column = request.getParameter("column");
 
 		if (gameId == null || row == null || column == null)
-			return ReturnValue.toString();
-
+		{
+			System.out.println("Nešto je null" );
+			return null;
+		}
 		// Get game
 		GameId = Integer.decode(gameId);
+		System.out.println("Gameid: " + gameId );
 		Game = this.GameProcessor.getGameById(GameId);
-
+		System.out.println("____________________________________" );
+		System.out.println( Game.toString());
 
 		Row = Integer.decode(row); 
 		Column = Integer.decode(column);
 		Cell = new Cell(Row, Column, GameId, Game.CurrentPlayer);
 		ReturnValue = Game.Play(Game.CurrentPlayer, Cell);
-		return Game.CurrentPlayer.Name;/**/ //ReturnValue.toString();
+		
+		return Game;
+		/*
+		if(!ReturnValue)
+		{
+
+			return new ResponseEntity<String>("{lll:kk}", HttpStatus.PAYMENT_REQUIRED);
+			
+		}
+		else
+			return new ResponseEntity<String>("{lll:kk}",HttpStatus.OK);/* //ReturnValue.toString();
+		
+		*/
 
 	}
-
+	/************************************************************************
+	 * 
+	 * Stats method
+	 * 
+	 * 
+	 ***********************************************************************/
+	@RequestMapping(value = "/stats", method = RequestMethod.GET, produces = { "application/json" })
+	public List<Player> stats(HttpServletRequest request) {
+		return this.GameProcessor.Players;
+	}
+	/************************************************************************
+	 * 
+	 * Status method
+	 * 
+	 * 
+	 ***********************************************************************/
+	@RequestMapping(value = "/status", method = RequestMethod.GET, produces = { "application/json" })
+	public String status(@RequestParam(value="gameId", defaultValue= "-1")Integer gameId, HttpServletRequest request) {
+		Game g = this.GameProcessor.GetGameById(gameId);
+		Integer s = this.GameProcessor.Statistics.size();
+		
+		String ret = "";
+		
+		if(g != null)
+			ret+=g.toString();
+		return s.toString() + "   , "+ ret;
+	}
 	/************************************************************************
 	 * 
 	 * New Game method
@@ -66,7 +120,9 @@ public class KKGameController {
 	 * 
 	 ***********************************************************************/
 	@RequestMapping(value = "/new", method = RequestMethod.GET, produces = { "application/json" })
-	public String New(HttpServletRequest request) {
+	public Game New(HttpServletRequest request) {
+
+
 		// Get required arguments
 		String first = request.getParameter("first");
 		String second = request.getParameter("second");
@@ -81,9 +137,9 @@ public class KKGameController {
 	//	return GameId.toString();
 		if(GameId <  0)
 		{
-			game = CreateGameInstanceWithCurrentPlayers(0);
+			game = this.GameProcessor.CreateGameInstanceWithCurrentPlayers(0);
 
-			System.out.println("kreiram Prvu igru, igra id = " + game.getId().toString());
+			System.out.println("kreiram Prvu igru, igra id = " + game.GameId.toString());
 			System.out.println("Prvi igra = " + game.CurrentPlayer.toString() );
 			System.out.println( );
 			System.out.println( );
@@ -95,7 +151,7 @@ public class KKGameController {
 			if(game != null && game.Status == GameStatus.Finished)
 			{	
 				System.out.println("Zadnja igra je dovršena, kreiram novu; = ");
-				game = CreateGameInstanceWithCurrentPlayers(GameId);
+				game = this.GameProcessor.CreateGameInstanceWithCurrentPlayers(GameId);
 				System.out.println("Nova igra id= " + game.CurrentPlayer.toString() );
 				
 				System.out.println("Prvi igra = " + game.CurrentPlayer.toString() );
@@ -111,21 +167,10 @@ public class KKGameController {
 			}
 		}
 		
-		return game.getId().toString();/**/
+		return game;/*.getId().toString()*/
 			
 	}
 
-	/**
-	 * @param GameId
-	 * @return
-	 */
-	protected Game CreateGameInstanceWithCurrentPlayers(Integer GameId) {
-		Game game;
-		game = new Game(this.GameProcessor._player1, this.GameProcessor._player2, GameId);
-		game.CurrentPlayer = this.GameProcessor.WhoPlaysFirst();
-		this.GameProcessor.Statistics.add(game);
-		return game;
-	}
 
 	/************************************************************************
 	 * 

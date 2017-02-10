@@ -15,9 +15,11 @@ public class Combination {
 			return false;
 	}
 
-	public boolean IsCurrentPlayerTheWinner(Player player) {
+	public boolean IsPlayerTheWinner(Player player) {
+		
 		Boolean returnValue = false;
 		Integer cnt = 0;
+		
 		if(this.isAchieved())
 		{
 			for(Cell cell : this.Cells)
@@ -26,8 +28,11 @@ public class Combination {
 					cnt++;
 			}
 		}
+		
 		if(cnt == this.CombinationSize)
+		{	
 			returnValue = true;
+		}
 		
 		return returnValue;
 	}
