@@ -4,6 +4,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,10 +44,7 @@ public class KKGameController {
 	 ***********************************************************************/
 
 	@RequestMapping(value = "/play", method = RequestMethod.GET, produces = { "application/json" })
-	public Game Play(HttpServletRequest request ) {
-		Boolean ReturnValue = false;
-		// Get required arguments
-		
+	public ResponseEntity<Game> Play(HttpServletRequest request ) {
 		Game Game;
 		Integer GameId;
 		Cell Cell;
@@ -70,20 +70,19 @@ public class KKGameController {
 		Row = Integer.decode(row); 
 		Column = Integer.decode(column);
 		Cell = new Cell(Row, Column, GameId, Game.CurrentPlayer);
-		ReturnValue = Game.Play(Game.CurrentPlayer, Cell);
-		
-		return Game;
-		/*
-		if(!ReturnValue)
-		{
 
-			return new ResponseEntity<String>("{lll:kk}", HttpStatus.PAYMENT_REQUIRED);
-			
+        HttpHeaders responseHeaders = new HttpHeaders();
+
+		if(Game.Play(Cell) != GameStatus.FieldNotEmpty)
+		{
+			System.out.println("returned OK" );
+			return new ResponseEntity<>(Game, responseHeaders, HttpStatus.OK);
 		}
 		else
-			return new ResponseEntity<String>("{lll:kk}",HttpStatus.OK);/* //ReturnValue.toString();
-		
-		*/
+		{
+			System.out.println("Returned 402" );
+	        return new ResponseEntity<>(Game, responseHeaders, HttpStatus.PAYMENT_REQUIRED);
+		}
 
 	}
 	/************************************************************************
@@ -155,16 +154,15 @@ public class KKGameController {
 				System.out.println("Nova igra id= " + game.CurrentPlayer.toString() );
 				
 				System.out.println("Prvi igra = " + game.CurrentPlayer.toString() );
-				System.out.println( );
-				System.out.println( );
+
 			}
 			else
 			{
 				System.out.println("Igra se nastavlja, igra = " + game.CurrentPlayer.toString() );
-				game.Status = GameStatus.Finished;
-				System.out.println( );
-				System.out.println( );
+				
 			}
+				System.out.println( );
+				System.out.println( );
 		}
 		
 		return game;/*.getId().toString()*/
@@ -199,4 +197,5 @@ public class KKGameController {
 			return "Nema takvog, kreiram";
 		}
 	}
+
 }

@@ -6,6 +6,9 @@ import java.util.List;
 public class Combination {
 	public List<Cell> Cells = new ArrayList<Cell>();
 	public int CombinationSize = 3;
+	GameRuleType type = GameRuleType.HORIZONTAL;
+	private GameRowType rowNo;
+	private GameCellType colNo;
 	
 	public Boolean isAchieved()
 	{
@@ -13,6 +16,23 @@ public class Combination {
 			return true;
 		else
 			return false;
+	}
+
+	public Combination(GameRuleType type) {
+		super();
+		this.type = type;
+	}
+
+	public Combination(GameRuleType horizontal, GameRowType a) {
+		this.type = horizontal;
+		this.rowNo = a;
+	}
+
+
+
+	public Combination(GameRuleType vertical, GameCellType a) {
+		this.type = vertical;
+		this.colNo = a;
 	}
 
 	public boolean IsPlayerTheWinner(Player player) {
@@ -29,7 +49,7 @@ public class Combination {
 			}
 		}
 		
-		if(cnt == this.CombinationSize)
+		if(cnt.equals(this.CombinationSize))
 		{	
 			returnValue = true;
 		}

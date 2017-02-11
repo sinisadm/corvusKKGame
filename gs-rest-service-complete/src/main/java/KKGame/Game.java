@@ -13,7 +13,7 @@ public class Game {
 	*/
 	private final Player Player1;
 	private final Player Player2;
-	public Integer Status;
+	public GameStatus Status;
 	
 	protected Player CurrentPlayer = null;
 
@@ -68,15 +68,36 @@ public class Game {
 	}
 
 	
-	public Boolean Play(Player player, Cell cell) {
-		Boolean moved = false;
-		if (!this._checkCellsLimit() && !this._checkIfCellsCantBeAdded(this.Game, cell))
+	public GameStatus Play( Cell cell) {
+		Boolean isComputer = this.CurrentPlayer.Name.equals("computer");
+		
+		Boolean limit = this._checkCellsLimit();
+		Boolean cantBeAdded = this.checkIfCellsCantBeAdded( cell);
+		Boolean isGameOver = false;
+		
+		
+		if (!limit)
 		{	
-			moved = true;
-			this.Game.add(cell);
-			System.out.println("Added: " + cell.toString() );	
+			if(!cantBeAdded)
+			{
+				this.Game.add(cell);
+				this._gameInProggress();
+				System.out.println("Added: " + cell.toString() );
+				isGameOver = this._isSomeoneWin();	
+				return this.Status;
+			}
+			else
+			{
+				this._gameFieldNotEmpty();
+				return this.Status;
+			}
 		}
-		Boolean isGameOver = this._isSomeoneWin();
+		else
+		{
+			this.Status = GameStatus.Finished;
+			//return this.Status;
+			
+		}
 		
 		if(isGameOver)
 		{
@@ -85,10 +106,26 @@ public class Game {
 			else
 				this.Status = GameStatus.Player2Wins;
 		}
+		else
+		{
+			Player player = this._getCurrentPlayer();
+			if(player.Name.equalsIgnoreCase("computer"))
+			{
+				player.MakeMove(this);
+			}
+			
+		}
 		Integer size = this.Game.size();
 		System.out.println("Game played, Id: " + this.GameId + "\\n Prvi igrač: " + this.Player1.Name + ", drugi igrač: " + this.Player2.Name + "\\n polja: " + size );	
-		return isGameOver;
+		return this.Status;
 
+	}
+
+	/**
+	 * 
+	 */
+	private void _gameFieldNotEmpty() {
+		this.Status = GameStatus.FieldNotEmpty;
 	}
 
 	public void SetCurrentPlayer(Player player) {
@@ -105,35 +142,49 @@ public class Game {
 	{
 		return (this.CurrentPlayer == this.Player1) ? this.Player2 : this.Player1;
 	}
+	private Player _getCurrentPlayer()
+	{
+		return (this.CurrentPlayer == this.Player1) ? this.Player1 : this.Player2;
+	}
 	private Boolean _checkCellsLimit() {
 	
 		return (this.Game.size() >= 9) ? true : false;
 	}
 	
-	private Boolean _checkIfCellsCantBeAdded(final List<Cell> list, final Cell cell) {
-
-	    return list.stream().filter(c -> c.getRow().equals(cell.getRow()) && c.getColumn().equals(cell.getColumn())).findFirst().isPresent();
-	
+	public Boolean checkIfCellsCantBeAdded( final Cell cell) {
+		Boolean b = this.Game.stream().filter(c -> c.getRow().equals(cell.getRow()) && c.getColumn().equals(cell.getColumn())).findFirst().isPresent();
+		//this.Game.add(cell);
+		//System.out.println("fgfzhfjggujgujhg   " + b.toString());
+	    return b;
 	}
 
 	private Boolean _isSomeoneWin() {
 		Boolean returnValue = false;
+		Boolean winn = false;
+		Boolean filled = false;
+		
 		List<Combination> comb = _fillCells2Combination();
 		Combination combination = null;
 		
 		for(Combination c : comb)
 		{
 			if(c.Cells.size()== 3)
+			{
 				combination = c;
+				if(combination != null)
+				{	
+					if(combination.IsPlayerTheWinner(this.CurrentPlayer))
+					{
+						winn = true;
+						this._gameFinished();
+					}
+					filled = this.Game.size() == 9;
+				}
+			}
 		}
 		
-		if(combination == null)
-			return  returnValue;
-		
-		Boolean winn = !combination.IsPlayerTheWinner(this.CurrentPlayer);
-		Boolean filled = this.Game.size() == 9;
 		if(winn)
-		{
+		{	returnValue = true;
 			this.CurrentPlayer.Winn();
 			this._getOppositePlayer().Lose();
 			_gameFinished();
@@ -169,7 +220,7 @@ public class Game {
 
 	private void _switchPlayers() {
 
-			System.out.println("Trenutni igrač:  " + this.CurrentPlayer.toString());
+		System.out.println("Trenutni igrač:  " + this.CurrentPlayer.toString());
 		this.CurrentPlayer = (this.CurrentPlayer == this.Player1) ? this.Player2 : this.Player1;
 		System.out.println("nakon zamjene je igrač:  " + this.CurrentPlayer.toString());
 	}
@@ -179,14 +230,14 @@ public class Game {
 	 */
 	private List<Combination> _fillCells2Combination() {
 		List<Combination> comb = new ArrayList<Combination>();
-		Combination rows1 = new Combination();
-		Combination rows2 = new Combination();
-		Combination rows3 = new Combination();
-		Combination columns1 = new Combination();
-		Combination columns2 = new Combination();
-		Combination columns3 = new Combination();
-		Combination diagonal1 = new Combination();
-		Combination diagonal2 = new Combination();
+		Combination rows1 = new Combination(GameRuleType.HORIZONTAL,GameRowType.FIRST);
+		Combination rows2 = new Combination(GameRuleType.HORIZONTAL,GameRowType.SECOND);
+		Combination rows3 = new Combination(GameRuleType.HORIZONTAL,GameRowType.THIRD);
+		Combination columns1 = new Combination(GameRuleType.VERTICAL, GameCellType.A);
+		Combination columns2 = new Combination(GameRuleType.VERTICAL);
+		Combination columns3 = new Combination(GameRuleType.VERTICAL);
+		Combination diagonal1 = new Combination(GameRuleType.DIAGONAL);
+		Combination diagonal2 = new Combination(GameRuleType.DIAGONAL);
 		
 		for (Cell cell : this.Game) {
 			if (cell.Row == 1) {
@@ -258,7 +309,7 @@ public class Game {
 	 * 
 	 * 
 	 * Old methods idea private void gameStatistic() {
-	 * this.CheckIfStartedGameExist(); this.GetPlayerConfiguration();
+	 * this.ChecbkIfStartedGameExist(); this.GetPlayerConfiguration();
 	 * this.GetPlayingMode(); }
 	 * 
 	 * private void GetPlayingMode() { // TODO Auto-generated method stub
