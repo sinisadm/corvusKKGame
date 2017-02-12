@@ -38,13 +38,14 @@ public class gameBean {
 	}
 
 
+	public Game GetGameById(Integer gameId) {
+		return this.Statistics.get(gameId);
+	}
+	
 	protected Game GetLastGame() {
 		return this.Statistics.get(this.Statistics.lastIndexOf(Statistics) );
 	}
 
-	public Game GetGameById(Integer gameId) {
-		return this.Statistics.get(gameId);
-	}
 
 	protected Game getGameById(Integer id) {
 		Game game = null;
@@ -112,7 +113,7 @@ public class gameBean {
 	
 		for (Player player : this.Players) {
 			if (player.Name.matches(name))  {
-			//	System.out.println("Value returned = " + player.toString() + ", " + name);
+				//System.out.println("Igrač pronađen = " + player.toString() + ", " + name);
 				return player;
 			}
 		}
@@ -143,6 +144,13 @@ public class gameBean {
 		Game game;
 		game = new Game(this._player1, this._player2, GameId);
 		game.CurrentPlayer = this.WhoPlaysFirst();
+		
+		if(game.CurrentPlayer.Name.equals("computer"))
+		{
+			//game.CurrentPlayer._isComputer = true;
+			game.CurrentPlayer.computer = new GameComputerPlayer();
+			game.Status = game.Play(game.CurrentPlayer.computer.Hint(game, ComputerSkill.MEDIUM));/**/
+		}
 		this.Statistics.add(game);
 		game.GameId = this.Statistics.size() -1;
 		System.out.println("Statistic size =" + this.Statistics.size());	

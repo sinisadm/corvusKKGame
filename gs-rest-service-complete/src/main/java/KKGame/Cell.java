@@ -30,13 +30,20 @@ public class Cell {
 		this.GameId = gameId;
 		this.Player = currentPlayer;
 	}
-
+	
+	public Boolean isCellAtEqualLocation(Cell cell)
+	{
+		return (this.Row.equals(cell.Row) && this.Column.equals(cell.Column)) ? true : false;
+	}
 
 	public Integer getRow() {
 		return Row;
 	}
 	public Integer getColumn() {
 		return Column;
+	}
+	public Player getPlayer() {
+		return Player;
 	}
 
 	

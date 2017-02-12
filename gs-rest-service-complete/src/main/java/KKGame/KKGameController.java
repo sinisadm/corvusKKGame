@@ -64,7 +64,7 @@ public class KKGameController {
 		GameId = Integer.decode(gameId);
 		System.out.println("Gameid: " + gameId );
 		Game = this.GameProcessor.getGameById(GameId);
-		System.out.println("____________________________________" );
+		System.out.println("_________Played__________" );
 		System.out.println( Game.toString());
 
 		Row = Integer.decode(row); 
@@ -75,12 +75,12 @@ public class KKGameController {
 
 		if(Game.Play(Cell) != GameStatus.FieldNotEmpty)
 		{
-			System.out.println("returned OK" );
+			//System.out.println("returned OK" );
 			return new ResponseEntity<>(Game, responseHeaders, HttpStatus.OK);
 		}
 		else
 		{
-			System.out.println("Returned 402" );
+			//System.out.println("Returned 402" );
 	        return new ResponseEntity<>(Game, responseHeaders, HttpStatus.PAYMENT_REQUIRED);
 		}
 
@@ -98,7 +98,7 @@ public class KKGameController {
 	/************************************************************************
 	 * 
 	 * Status method
-	 * 
+	 * TODO return json
 	 * 
 	 ***********************************************************************/
 	@RequestMapping(value = "/status", method = RequestMethod.GET, produces = { "application/json" })
@@ -132,7 +132,7 @@ public class KKGameController {
 		// Create new gane and add it to collection
 		Integer GameId = this.GameProcessor.Statistics.size() -1;
 
-		System.out.println("Indeks: " + GameId.toString() );	
+//		System.out.println("Indeks: " + GameId.toString() );	
 
 		if(GameId <  0)
 		{
@@ -179,25 +179,36 @@ public class KKGameController {
 	 * 
 	 ***********************************************************************/
 	@RequestMapping(value = "/newplayer", method = RequestMethod.GET, produces = { "application/json" })
-	public String NewPlayer(HttpServletRequest request) {
+	public Player NewPlayer(HttpServletRequest request) {
 		// Get required arguments
 		String name = request.getParameter("name");
 		Player player;
 
 		if(name == null)
 		{
-			return"Give me a name";
+			return null;
 		}
 		
 		player = this.GameProcessor.GetPlayer(name);
 		if(player != null)
 		{
-			return player.Name + this.GameProcessor.Players.size();
 		}
-		else
+			return player;		//.Name + this.GameProcessor.Players.size();
+	/*	else
 		{
 			return "Nema takvog, kreiram";
-		}
+		}*/
+	}
+	/************************************************************************
+	 * 
+	 * Get Players method
+	 * 
+	 * 
+	 ***********************************************************************/
+	@RequestMapping(value = "/getallplayers", method = RequestMethod.GET, produces = { "application/json" })
+	public List<Player> GetAllPlayers(HttpServletRequest request) {
+		return this.GameProcessor.Players;
+
 	}
 
 }

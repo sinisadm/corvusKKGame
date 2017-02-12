@@ -16,6 +16,10 @@ public class Player {
 	private ArrayList<Cell> _own;
 
 	private ArrayList<Cell> _oponent;
+
+	public boolean _isComputer = false;
+
+	public GameComputerPlayer computer;
     
     private void _setSuccessProcent()
     {
@@ -30,6 +34,8 @@ public class Player {
 	    this.Wins = 0;
 	    this.Lose = 0;
 	    this.Draw = 0;
+	    if(name.equals("computer"))
+	    	this._isComputer = true;
 	}
 
 

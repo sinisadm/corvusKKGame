@@ -9,6 +9,8 @@ public class Combination {
 	GameRuleType type = GameRuleType.HORIZONTAL;
 	private GameRowType rowNo;
 	private GameCellType colNo;
+	private CombinationStatus potential;
+	private CombinationStatus opositepotential;
 	
 	public Boolean isAchieved()
 	{
@@ -33,25 +35,49 @@ public class Combination {
 		this.colNo = a;
 	}
 
-	public Boolean checkCombination(Player player)
+	public Boolean checkCombination(Player player, Player player2)
 	{
-		Boolean hasCombinationOpositeMember;
-		
 		switch (this.rowNo)
 		{
-		default:
-			break;
-		case FIRST:
-			//this.checkRow(1);
-			break;
-		case SECOND:
-			//this.checkRow(2);
-			break;
-		case THIRD:
-			//this.checkRow(3);
-			break;
+			default:
+				break;
+			case FIRST:
+				this.potential = this.checkRow(1, player);
+				this.opositepotential = this.checkRow(1, player2);
+				break;
+			case SECOND:
+				this.potential = this.checkRow(2, player);
+				this.opositepotential = this.checkRow(2, player2);
+				break;
+			case THIRD:
+				this.potential = this.checkRow(3, player);
+				this.opositepotential = this.checkRow(3, player2);
+				break;
+
 		}
-		return false;
+		switch (this.colNo)
+		{
+			default:
+				break;
+			case A:
+				this.potential = this.checkCol(1, player);
+				this.opositepotential = this.checkCol(1, player2);
+				break;
+			case B:
+				this.potential = this.checkCol(2, player);
+				this.opositepotential = this.checkCol(2, player2);
+				break;
+			case C:
+				this.potential = this.checkCol(3, player);
+				this.opositepotential = this.checkCol(3, player2);
+				break;
+
+		}
+		
+		if(this.potential == CombinationStatus.OCCUPIED)
+			return false;
+		else
+			return true;
 	}
 
 	private CombinationStatus  checkRow(Integer id, Player player)

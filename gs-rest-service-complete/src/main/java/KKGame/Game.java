@@ -55,7 +55,6 @@ public class Game {
 		this.Player2 = _player2;
 		_gameInProggress();
 
-		System.out.println("Kreirana igra ");
 		System.out.println("Game created, Id: " + this.GameId + "\\n Prvi igrač: " + this.Player1.Name + ", drugi igrač: " + this.Player2.Name );	
 	}
 
@@ -70,6 +69,9 @@ public class Game {
 	
 	public GameStatus Play( Cell cell) {
 		Boolean isComputer = this.CurrentPlayer.Name.equals("computer");
+		/*
+		if(isComputer)
+			this.Status = this.Play(this.CurrentPlayer.computer.Hint(this, ComputerSkill.MEDIUM));*/
 		
 		Boolean limit = this._checkCellsLimit();
 		Boolean cantBeAdded = this.checkIfCellsCantBeAdded( cell);
@@ -84,6 +86,8 @@ public class Game {
 				this._gameInProggress();
 				System.out.println("Added: " + cell.toString() );
 				isGameOver = this._isSomeoneWin();	
+
+				System.out.println("Game Status : " + isGameOver.toString() );
 				return this.Status;
 			}
 			else
@@ -154,7 +158,7 @@ public class Game {
 	public Boolean checkIfCellsCantBeAdded( final Cell cell) {
 		Boolean b = this.Game.stream().filter(c -> c.getRow().equals(cell.getRow()) && c.getColumn().equals(cell.getColumn())).findFirst().isPresent();
 		//this.Game.add(cell);
-		//System.out.println("fgfzhfjggujgujhg   " + b.toString());
+		System.out.println("Cant be added   " + b.toString());
 	    return b;
 	}
 
