@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Game {
 
-	public final Integer GameId;
+	public Integer GameId;
 
 /*	public Integer getId() {
 		return GameId;

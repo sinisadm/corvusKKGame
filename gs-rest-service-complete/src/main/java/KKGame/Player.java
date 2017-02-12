@@ -63,9 +63,8 @@ public class Player {
 		this._oponent = new ArrayList<Cell>();
 		
 		Player computer = game.CurrentPlayer;
-		
+		List<Cell> freeCells = _getFreeFields(game);
 		_getTroops(game, this._own, this._oponent, computer);
-		_getFreeFields(game);
 		_analyzeTroops();
 		_makeDecision();
 		this._move();
@@ -85,10 +84,12 @@ public class Player {
 				Cell cell = new Cell(row, col, game.GameId, game.CurrentPlayer);
 				if(!game.checkIfCellsCantBeAdded(cell))
 					free.add(cell);
+				col++;
 			}
+			row++;
 		}
 		return free;
-		
+
 	}
 
 
@@ -99,7 +100,16 @@ public class Player {
 
 
 	private void _analyzeTroops() {
-		// TODO Auto-generated method stub
+		Integer count = this._own.size();
+		Integer countOpo = this._oponent.size();
+		
+		if(count.equals(0))
+		{
+			// Strategy
+		}
+			
+		
+		
 		
 	}
 

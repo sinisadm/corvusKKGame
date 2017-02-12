@@ -28,13 +28,92 @@ public class Combination {
 		this.rowNo = a;
 	}
 
-
-
 	public Combination(GameRuleType vertical, GameCellType a) {
 		this.type = vertical;
 		this.colNo = a;
 	}
 
+	public Boolean checkCombination(Player player)
+	{
+		Boolean hasCombinationOpositeMember;
+		
+		switch (this.rowNo)
+		{
+		default:
+			break;
+		case FIRST:
+			//this.checkRow(1);
+			break;
+		case SECOND:
+			//this.checkRow(2);
+			break;
+		case THIRD:
+			//this.checkRow(3);
+			break;
+		}
+		return false;
+	}
+
+	private CombinationStatus  checkRow(Integer id, Player player)
+	{
+		CombinationStatus status = CombinationStatus.EMPTY;
+		Integer playerCount = 0;
+		Boolean opposite = false;
+		for(Cell cell : this.Cells)
+		{
+			if(cell.Row == id)
+			{
+				if(!cell.Player.equals(player))
+				{
+					opposite = true;
+				}
+				else
+				{
+					playerCount++;
+				}
+			}
+		}
+		if(opposite)
+			return CombinationStatus.OCCUPIED;
+		else if(playerCount == 0)
+			return CombinationStatus.EMPTY;
+		else if(playerCount.equals(1))
+			return CombinationStatus.POTENTIAL;
+		else if(playerCount.equals(2))
+			return CombinationStatus.VERY_POTENTIAL;
+		return status;
+	}
+	private CombinationStatus checkCol(Integer id, Player player)
+	{
+		CombinationStatus status = CombinationStatus.EMPTY;
+		Integer playerCount = 0;
+		Boolean opposite = false;
+		for(Cell cell : this.Cells)
+		{
+			if(cell.Column == id)
+			{
+				if(!cell.Player.equals(player))
+				{
+					opposite = true;
+				}
+				else
+				{
+					playerCount++;
+				}
+			}
+		}
+		if(opposite)
+			return CombinationStatus.OCCUPIED;
+		else if(playerCount == 0)
+			return CombinationStatus.EMPTY;
+		else if(playerCount.equals(1))
+			return CombinationStatus.POTENTIAL;
+		else if(playerCount.equals(2))
+			return CombinationStatus.VERY_POTENTIAL;
+		return status;
+	}
+	
+	
 	public boolean IsPlayerTheWinner(Player player) {
 		
 		Boolean returnValue = false;

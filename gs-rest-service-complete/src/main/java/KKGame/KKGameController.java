@@ -133,7 +133,7 @@ public class KKGameController {
 		Integer GameId = this.GameProcessor.Statistics.size() -1;
 
 		System.out.println("Indeks: " + GameId.toString() );	
-	//	return GameId.toString();
+
 		if(GameId <  0)
 		{
 			game = this.GameProcessor.CreateGameInstanceWithCurrentPlayers(0);
@@ -145,7 +145,9 @@ public class KKGameController {
 		}
 		else
 		{
-			game = this.GameProcessor.getGameById(GameId);
+			GameId = this.GameProcessor.Statistics.size();
+			game = this.GameProcessor.CreateGameInstanceWithCurrentPlayers(GameId);
+			//game = this.GameProcessor.getGameById(GameId);
 			
 			if(game != null && game.Status == GameStatus.Finished)
 			{	

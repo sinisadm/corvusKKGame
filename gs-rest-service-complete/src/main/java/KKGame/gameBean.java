@@ -144,6 +144,8 @@ public class gameBean {
 		game = new Game(this._player1, this._player2, GameId);
 		game.CurrentPlayer = this.WhoPlaysFirst();
 		this.Statistics.add(game);
+		game.GameId = this.Statistics.size() -1;
+		System.out.println("Statistic size =" + this.Statistics.size());	
 		return game;
 	}
 }

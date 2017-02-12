@@ -16,6 +16,4 @@ public class GameMapField {
 	public GameCellType get_cell() {
 		return _cell;
 	}
-
-	
 }
