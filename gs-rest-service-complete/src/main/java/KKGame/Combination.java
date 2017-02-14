@@ -12,6 +12,19 @@ public class Combination {
 	private CombinationStatus potential;
 	private CombinationStatus opositepotential;
 	
+	private List<Integer> combinationRowKeys;
+	private List<Integer> combinationColumnKeys;
+
+	public List<Integer> getCombinationColumnKeys() {
+		return combinationColumnKeys;
+	}
+
+	public List<Integer> getCombinationRowKeys() {
+		return combinationRowKeys;
+	}
+
+
+	
 	public Boolean isAchieved()
 	{
 		if(this.Cells.size() == this.CombinationSize)
@@ -28,11 +41,16 @@ public class Combination {
 	public Combination(GameRuleType horizontal, GameRowType a) {
 		this.type = horizontal;
 		this.rowNo = a;
+		System.out.println("Dodajem kombinaciju:   gameRowType=" + a);
+		this.CalculateKeys();
 	}
 
 	public Combination(GameRuleType vertical, GameCellType a) {
 		this.type = vertical;
 		this.colNo = a;
+		System.out.println("Dodajem kombinaciju:   gameColumnType=" + a);
+		this.CalculateKeys();
+
 	}
 
 	public Boolean checkCombination(Player player, Player player2)
@@ -139,6 +157,15 @@ public class Combination {
 		return status;
 	}
 	
+	public Boolean IsCordinatesInCombination(Integer row, Integer col)
+	{
+		for(Cell cell : this.Cells)
+		{
+			if(cell.Row.equals(row) && cell.Column.equals(col))
+				return true;
+		}
+		return false;
+	}
 	
 	public boolean IsPlayerTheWinner(Player player) {
 		
@@ -160,5 +187,173 @@ public class Combination {
 		}
 		
 		return returnValue;
+	}
+	
+	private List<Integer> AvailableCombonationRowKeys()
+	{ 
+		List<Integer> ret = new ArrayList<Integer>();
+		switch(this.type)
+		{
+			case DIAGONAL:
+				switch(this.colNo)
+				{
+					case A:
+						System.out.println( "DIAGONAL - A");
+						ret.add(1);
+						ret.add(2);
+						ret.add(3);
+						
+						break;
+					case C:
+						System.out.println( "DIAGONAL - C");
+						ret.add(3);
+						ret.add(2);
+						ret.add(1);	
+						
+						break;
+					default:
+						break;			
+				}
+
+				break;
+			case HORIZONTAL:
+				// retci
+
+				System.out.println( "HORIZONTAL - " + this.rowNo);
+						ret.add(1);
+						ret.add(2);
+						ret.add(3);
+	
+				break;
+			case VERTICAL:
+				// kolone
+				switch(this.rowNo)
+				{
+					case FIRST:
+						System.out.println( "VERTICAL - A");
+						ret.add(1);
+						ret.add(1);
+						ret.add(1);
+						
+						break;
+					case SECOND:
+						System.out.println( "VERTICAL - B" );
+						ret.add(2);
+						ret.add(2);
+						ret.add(2);	
+						
+						break;
+					case THIRD:
+						System.out.println( "VERTICAL	 - C" );
+						ret.add(3);
+						ret.add(3);
+						ret.add(3);	
+						
+						break;
+					default:
+						break;			
+				}
+
+				break;
+			default:
+				break;
+		
+		}
+		
+		return ret;		
+	}
+
+	private List<Integer> AvailableCombonationColumnKeys()
+	{ 
+
+		List<Integer> ret = new ArrayList<Integer>();
+		switch(this.type)
+		{
+			case DIAGONAL:
+				switch(this.colNo)
+				{
+					case A:
+						System.out.println( "Diagonal	 - " + this.colNo );
+						ret.add(3);
+						ret.add(2);
+						ret.add(1);	
+						
+						break;
+					case C:
+						System.out.println( "Diagonal	 - " + this.colNo );
+						ret.add(1);
+						ret.add(2);
+						ret.add(3);
+						
+						break;
+					default:
+						break;			
+				}
+
+				break;
+			case HORIZONTAL:
+				// kolone
+				
+				switch(this.rowNo)
+				{
+					case FIRST:
+						System.out.println( "HORIZONTAL	 - " + this.colNo );
+						ret.add(1);
+						ret.add(1);
+						ret.add(1);
+						
+						break;
+					case SECOND:
+						System.out.println( "HORIZONTAL	 - " + this.colNo );
+						ret.add(2);
+						ret.add(2);
+						ret.add(2);	
+						
+						break;
+					case THIRD:
+						System.out.println( "HORIZONTAL	 - " + this.colNo );
+						ret.add(3);
+						ret.add(3);
+						ret.add(3);	
+						
+						break;
+					default:
+						break;			
+				}
+	
+				break;
+			case VERTICAL:
+				// retci
+				System.out.println( "VERTICAL	 - " + this.colNo );
+						ret.add(1);
+						ret.add(2);
+						ret.add(3);
+
+				break;
+			default:
+				break;	
+		}
+		
+		return ret;		
+	}
+	
+	private void CalculateKeys()
+	{
+		this.combinationRowKeys = this.AvailableCombonationRowKeys();
+		this.combinationColumnKeys = this.AvailableCombonationColumnKeys();
+	}
+
+	
+	public List<Cell> GeneratePossibleMoves() {
+		List<Cell> ret = new ArrayList<Cell>();
+		
+		for(int a = 0; a <= 2; a++)
+		{
+			if(!IsCordinatesInCombination(this.combinationRowKeys.get(a), this.combinationColumnKeys.get(a)))
+			{
+				ret.add(new Cell(this.combinationRowKeys.get(a), this.combinationColumnKeys.get(a)));
+			}
+		}
+		return ret;
 	}
 }

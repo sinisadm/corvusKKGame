@@ -147,7 +147,9 @@ public class gameBean {
 		
 		if(game.CurrentPlayer.Name.equals("computer"))
 		{
-			//game.CurrentPlayer._isComputer = true;
+
+			System.out.println("Igram umjesto kompjutera" );
+			game.CurrentPlayer._isComputer = true;
 			game.CurrentPlayer.computer = new GameComputerPlayer();
 			game.Status = game.Play(game.CurrentPlayer.computer.Hint(game, ComputerSkill.MEDIUM));/**/
 		}

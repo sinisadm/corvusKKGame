@@ -19,7 +19,7 @@ public class Player {
 
 	public boolean _isComputer = false;
 
-	public GameComputerPlayer computer;
+	protected GameComputerPlayer computer;
     
     private void _setSuccessProcent()
     {

@@ -11,14 +11,17 @@ public class Game {
 		return GameId;
 	}
 	*/
-	private final Player Player1;
-	private final Player Player2;
+	public final Player Player1;
+	public final Player Player2;
 	public GameStatus Status;
 	
-	protected Player CurrentPlayer = null;
+	public Player CurrentPlayer = null;
 
 	public List<Cell> Game = new ArrayList<Cell>();
 
+	public static boolean logicalXOR(boolean x, boolean y) {
+	    return ( ( x || y ) && ! ( x && y ) );
+	}
 
 	/* *	Constructors	* */
 
@@ -68,10 +71,7 @@ public class Game {
 
 	
 	public GameStatus Play( Cell cell) {
-		Boolean isComputer = this.CurrentPlayer.Name.equals("computer");
-		/*
-		if(isComputer)
-			this.Status = this.Play(this.CurrentPlayer.computer.Hint(this, ComputerSkill.MEDIUM));*/
+
 		
 		Boolean limit = this._checkCellsLimit();
 		Boolean cantBeAdded = this.checkIfCellsCantBeAdded( cell);
@@ -142,7 +142,7 @@ public class Game {
 	 * Private methods
 	 * */ 
 
-	private Player _getOppositePlayer()
+	public Player GetOppositePlayer()
 	{
 		return (this.CurrentPlayer == this.Player1) ? this.Player2 : this.Player1;
 	}
@@ -190,14 +190,14 @@ public class Game {
 		if(winn)
 		{	returnValue = true;
 			this.CurrentPlayer.Winn();
-			this._getOppositePlayer().Lose();
+			this.GetOppositePlayer().Lose();
 			_gameFinished();
 			return returnValue;
 		}
 		else if(filled)
 		{
 			this.CurrentPlayer.Draw();;
-			this._getOppositePlayer().Draw();;
+			this.GetOppositePlayer().Draw();;
 			_gameFinished();
 			return returnValue;
 		}
@@ -232,16 +232,32 @@ public class Game {
 	/**
 	 * 
 	 */
-	private List<Combination> _fillCells2Combination() {
+	public List<Combination> _fillCells2Combination() {
 		List<Combination> comb = new ArrayList<Combination>();
-		Combination rows1 = new Combination(GameRuleType.HORIZONTAL,GameRowType.FIRST);
-		Combination rows2 = new Combination(GameRuleType.HORIZONTAL,GameRowType.SECOND);
-		Combination rows3 = new Combination(GameRuleType.HORIZONTAL,GameRowType.THIRD);
-		Combination columns1 = new Combination(GameRuleType.VERTICAL, GameCellType.A);
-		Combination columns2 = new Combination(GameRuleType.VERTICAL);
-		Combination columns3 = new Combination(GameRuleType.VERTICAL);
-		Combination diagonal1 = new Combination(GameRuleType.DIAGONAL);
-		Combination diagonal2 = new Combination(GameRuleType.DIAGONAL);
+		Combination rows1 = null;
+		Combination rows2 = null;
+		Combination rows3 = null;
+		Combination columns1 =null;
+		Combination columns2 = null;
+		Combination columns3 = null;
+		Combination diagonal1 = null;
+		Combination diagonal2 = null;
+		
+if(logicalXOR(rows1 ==	null , rows1.Cells.size() > 0));
+	rows1 = new Combination(GameRuleType.HORIZONTAL,GameRowType.FIRST);
+	
+if(logicalXOR(rows2 ==	null , rows2.Cells.size() > 0));
+	rows2 = new Combination(GameRuleType.HORIZONTAL,GameRowType.SECOND);
+
+if(logicalXOR(rows1 ==	null , rows1.Cells.size() > 0));
+		 rows1 = new Combination(GameRuleType.HORIZONTAL,GameRowType.FIRST);
+		 rows2 = new Combination(GameRuleType.HORIZONTAL,GameRowType.SECOND);
+		 rows3 = new Combination(GameRuleType.HORIZONTAL,GameRowType.THIRD);
+		 columns1 = new Combination(GameRuleType.VERTICAL, GameCellType.A);
+		 columns2 = new Combination(GameRuleType.VERTICAL, GameCellType.B);
+		 columns3 = new Combination(GameRuleType.VERTICAL, GameCellType.C);
+		 diagonal1 = new Combination(GameRuleType.DIAGONAL, GameCellType.A);
+		 diagonal2 = new Combination(GameRuleType.DIAGONAL, GameCellType.C);
 		
 		for (Cell cell : this.Game) {
 			if (cell.Row == 1) {
@@ -292,14 +308,25 @@ public class Game {
 				}
 			}
 		}
-		comb.add(rows1);
-		comb.add(rows2);
-		comb.add(rows3);
-		comb.add(columns1);
-		comb.add(columns2);
-		comb.add(columns3);
-		comb.add(diagonal1);
-		comb.add(diagonal2);
+		if(rows1.Cells.size() > 0)
+			comb.add(rows1);
+		if(rows2.Cells.size() > 0)
+			comb.add(rows2);
+		if(rows3.Cells.size() > 0)	
+			comb.add(rows3);
+		if(columns1.Cells.size() > 0)	
+			comb.add(columns1);
+		if(columns2.Cells.size() > 0)	
+			comb.add(columns2);
+		if(columns3.Cells.size() > 0)	
+			comb.add(columns3);
+		if(diagonal1.Cells.size() > 0)	
+			comb.add(diagonal1);
+		if(diagonal2.Cells.size() > 0)	
+			comb.add(diagonal2);
+		
+
+		System.out.println("Combination size::  " + comb.size());
 		return comb;
 	}
 
