@@ -62,10 +62,8 @@ public class KKGameController {
 		}
 		// Get game
 		GameId = Integer.decode(gameId);
-		System.out.println("Gameid: " + gameId );
+		System.out.println(" Play, Gameid: " + gameId );
 		Game = this.GameProcessor.getGameById(GameId);
-		System.out.println("_________Played__________" );
-		System.out.println( Game.toString());
 
 		Row = Integer.decode(row); 
 		Column = Integer.decode(column);

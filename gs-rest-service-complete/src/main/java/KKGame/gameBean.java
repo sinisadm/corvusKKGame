@@ -150,7 +150,6 @@ public class gameBean {
 
 			System.out.println("Igram umjesto kompjutera" );
 			game.CurrentPlayer._isComputer = true;
-			game.CurrentPlayer.computer = new GameComputerPlayer();
 			game.Status = game.Play(game.CurrentPlayer.computer.Hint(game, ComputerSkill.MEDIUM));/**/
 		}
 		this.Statistics.add(game);

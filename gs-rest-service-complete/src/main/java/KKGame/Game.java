@@ -76,7 +76,18 @@ public class Game {
 		Boolean limit = this._checkCellsLimit();
 		Boolean cantBeAdded = this.checkIfCellsCantBeAdded( cell);
 		Boolean isGameOver = false;
-		
+		System.out.println("");
+		System.out.println("PPPPLLLLAAAAYYYY");
+		System.out.println("");
+		System.out.println("Limit je prijeđen: " + limit.toString());
+		System.out.println(cell);
+		System.out.println("");
+		System.out.println("");
+		System.out.println("");
+		System.out.println("");
+		System.out.println("");
+		System.out.println("");
+		System.out.println("");
 		
 		if (!limit)
 		{	
@@ -115,7 +126,7 @@ public class Game {
 			Player player = this._getCurrentPlayer();
 			if(player.Name.equalsIgnoreCase("computer"))
 			{
-				player.MakeMove(this);
+
 			}
 			
 		}
@@ -156,10 +167,12 @@ public class Game {
 	}
 	
 	public Boolean checkIfCellsCantBeAdded( final Cell cell) {
-		Boolean b = this.Game.stream().filter(c -> c.getRow().equals(cell.getRow()) && c.getColumn().equals(cell.getColumn())).findFirst().isPresent();
+		Boolean cantBeAdded = false;
+		if(this.Game.size()> 0 && cell != null)
+			cantBeAdded = this.Game.stream().filter(c -> c.getRow().equals(cell.getRow()) && c.getColumn().equals(cell.getColumn())).findFirst().isPresent();
 		//this.Game.add(cell);
-		System.out.println("Cant be added   " + b.toString());
-	    return b;
+		System.out.println("Cant be added   " + cantBeAdded.toString());
+	    return cantBeAdded;
 	}
 
 	private Boolean _isSomeoneWin() {
@@ -227,6 +240,22 @@ public class Game {
 		System.out.println("Trenutni igrač:  " + this.CurrentPlayer.toString());
 		this.CurrentPlayer = (this.CurrentPlayer == this.Player1) ? this.Player2 : this.Player1;
 		System.out.println("nakon zamjene je igrač:  " + this.CurrentPlayer.toString());
+		
+		
+		/*
+		 * 
+		 * Computer Move
+		 * 
+		 * */	
+		if(this.CurrentPlayer.toString().equals("computer"))
+		{
+			System.out.println("Computer move ******************************************");	
+			this.Status = this.Play(this.CurrentPlayer.computer.Hint(this, ComputerSkill.MEDIUM));/**/
+			this._switchPlayers();
+		}
+		else
+			System.out.println(this.CurrentPlayer.toString());
+		//player.MakeMove(this);
 	}
 
 	/**
@@ -243,86 +272,114 @@ public class Game {
 		Combination diagonal1 = null;
 		Combination diagonal2 = null;
 		
-if(logicalXOR(rows1 ==	null , rows1.Cells.size() > 0));
-	rows1 = new Combination(GameRuleType.HORIZONTAL,GameRowType.FIRST);
-	
-if(logicalXOR(rows2 ==	null , rows2.Cells.size() > 0));
-	rows2 = new Combination(GameRuleType.HORIZONTAL,GameRowType.SECOND);
-
-if(logicalXOR(rows1 ==	null , rows1.Cells.size() > 0));
-		 rows1 = new Combination(GameRuleType.HORIZONTAL,GameRowType.FIRST);
-		 rows2 = new Combination(GameRuleType.HORIZONTAL,GameRowType.SECOND);
-		 rows3 = new Combination(GameRuleType.HORIZONTAL,GameRowType.THIRD);
-		 columns1 = new Combination(GameRuleType.VERTICAL, GameCellType.A);
-		 columns2 = new Combination(GameRuleType.VERTICAL, GameCellType.B);
-		 columns3 = new Combination(GameRuleType.VERTICAL, GameCellType.C);
-		 diagonal1 = new Combination(GameRuleType.DIAGONAL, GameCellType.A);
-		 diagonal2 = new Combination(GameRuleType.DIAGONAL, GameCellType.C);
-		
 		for (Cell cell : this.Game) {
 			if (cell.Row == 1) {
+				if (rows1 == null)
+					rows1 = new Combination(GameRuleType.HORIZONTAL,GameRowType.FIRST);
+
 				rows1.Cells.add(cell);
 				if (cell.Column == 1) {
+					if (columns1 == null)
+						columns1 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
+					if (diagonal1 == null)
+						diagonal1 =new Combination(GameRuleType.DIAGONAL, GameCellType.A);
 					columns1.Cells.add(cell);
 					diagonal1.Cells.add(cell);
 				}
+				
+				
 				if (cell.Column == 2) {
+					if (columns2 == null)
+						columns2 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
 					columns2.Cells.add(cell);
 				}
 
 				if (cell.Column == 3) {
+					if (columns3 == null)
+						columns3 =new Combination(GameRuleType.VERTICAL, GameCellType.C);
+					if (diagonal2 == null)
+						diagonal2 =new Combination(GameRuleType.DIAGONAL, GameCellType.C);
 					columns3.Cells.add(cell);
 					diagonal2.Cells.add(cell);
 				}
 			}
 			if (cell.Row == 2) {
+				if (rows2 == null)
+					rows2 = new Combination(GameRuleType.HORIZONTAL,GameRowType.SECOND);
+
 				rows2.Cells.add(cell);
 				if (cell.Column == 1) {
+					
+					if (columns1 == null)
+						columns1 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
+					
 					columns1.Cells.add(cell);
 				}
 				if (cell.Column == 2) {
+					if (columns2 == null)
+						columns2 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
+					if (diagonal1 == null)
+						diagonal1 =new Combination(GameRuleType.DIAGONAL, GameCellType.A);
+					if (diagonal2 == null)
+						diagonal2 =new Combination(GameRuleType.DIAGONAL, GameCellType.C);
 					columns2.Cells.add(cell);
 					diagonal1.Cells.add(cell);
 					diagonal2.Cells.add(cell);
 				}
 
 				if (cell.Column == 3) {
+					if (columns3 == null)
+						columns3 =new Combination(GameRuleType.VERTICAL, GameCellType.C);
 					columns3.Cells.add(cell);
 				}
 
 			}
 			if (cell.Row == 3) {
+				if (rows3 == null)
+					rows3 = new Combination(GameRuleType.HORIZONTAL,GameRowType.THIRD);
+
 				rows3.Cells.add(cell);
 				if (cell.Column == 1) {
+					if (columns1 == null)
+						columns1 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
+					if (diagonal2 == null)
+						diagonal2 =new Combination(GameRuleType.DIAGONAL, GameCellType.C);
 					columns1.Cells.add(cell);
 					diagonal2.Cells.add(cell);
 
 				}
 				if (cell.Column == 2) {
+					if (columns2 == null)
+						columns2 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
 					columns2.Cells.add(cell);
 				}
 
 				if (cell.Column == 3) {
+					if (columns3 == null)
+						columns3 =new Combination(GameRuleType.VERTICAL, GameCellType.C);
+					if (diagonal1 == null)
+						diagonal1 =new Combination(GameRuleType.DIAGONAL, GameCellType.A);
 					columns3.Cells.add(cell);
 					diagonal1.Cells.add(cell);
 				}
 			}
 		}
-		if(rows1.Cells.size() > 0)
+
+		if(rows1 != null && rows1.Cells.size() > 0)
 			comb.add(rows1);
-		if(rows2.Cells.size() > 0)
+		if(rows2 != null && rows2.Cells.size() > 0)
 			comb.add(rows2);
-		if(rows3.Cells.size() > 0)	
+		if(rows3 != null && rows3.Cells.size() > 0)	
 			comb.add(rows3);
-		if(columns1.Cells.size() > 0)	
+		if(columns1 != null && columns1.Cells.size() > 0)	
 			comb.add(columns1);
-		if(columns2.Cells.size() > 0)	
+		if(columns2 != null && columns2.Cells.size() > 0)	
 			comb.add(columns2);
-		if(columns3.Cells.size() > 0)	
+		if(columns3 != null && columns3.Cells.size() > 0)	
 			comb.add(columns3);
-		if(diagonal1.Cells.size() > 0)	
+		if(diagonal1 != null && diagonal1.Cells.size() > 0)	
 			comb.add(diagonal1);
-		if(diagonal2.Cells.size() > 0)	
+		if(diagonal2 != null && diagonal2.Cells.size() > 0)	
 			comb.add(diagonal2);
 		
 

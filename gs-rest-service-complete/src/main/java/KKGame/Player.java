@@ -35,7 +35,10 @@ public class Player {
 	    this.Lose = 0;
 	    this.Draw = 0;
 	    if(name.equals("computer"))
+	    {
 	    	this._isComputer = true;
+	    	this.computer = new GameComputerPlayer();
+	    }
 	}
 
 

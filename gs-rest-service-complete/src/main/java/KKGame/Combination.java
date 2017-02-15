@@ -23,8 +23,6 @@ public class Combination {
 		return combinationRowKeys;
 	}
 
-
-	
 	public Boolean isAchieved()
 	{
 		if(this.Cells.size() == this.CombinationSize)
@@ -55,43 +53,48 @@ public class Combination {
 
 	public Boolean checkCombination(Player player, Player player2)
 	{
-		switch (this.rowNo)
+		if(this.rowNo != null)
 		{
-			default:
-				break;
-			case FIRST:
-				this.potential = this.checkRow(1, player);
-				this.opositepotential = this.checkRow(1, player2);
-				break;
-			case SECOND:
-				this.potential = this.checkRow(2, player);
-				this.opositepotential = this.checkRow(2, player2);
-				break;
-			case THIRD:
-				this.potential = this.checkRow(3, player);
-				this.opositepotential = this.checkRow(3, player2);
-				break;
-
+			switch (this.rowNo)
+			{
+				default:
+					break;
+				case FIRST:
+					this.potential = this.checkRow(1, player);
+					this.opositepotential = this.checkRow(1, player2);
+					break;
+				case SECOND:
+					this.potential = this.checkRow(2, player);
+					this.opositepotential = this.checkRow(2, player2);
+					break;
+				case THIRD:
+					this.potential = this.checkRow(3, player);
+					this.opositepotential = this.checkRow(3, player2);
+					break;
+	
+			}
 		}
-		switch (this.colNo)
+		if(this.colNo != null)
 		{
-			default:
-				break;
-			case A:
-				this.potential = this.checkCol(1, player);
-				this.opositepotential = this.checkCol(1, player2);
-				break;
-			case B:
-				this.potential = this.checkCol(2, player);
-				this.opositepotential = this.checkCol(2, player2);
-				break;
-			case C:
-				this.potential = this.checkCol(3, player);
-				this.opositepotential = this.checkCol(3, player2);
-				break;
-
+			switch (this.colNo)
+			{
+				default:
+					break;
+				case A:
+					this.potential = this.checkCol(1, player);
+					this.opositepotential = this.checkCol(1, player2);
+					break;
+				case B:
+					this.potential = this.checkCol(2, player);
+					this.opositepotential = this.checkCol(2, player2);
+					break;
+				case C:
+					this.potential = this.checkCol(3, player);
+					this.opositepotential = this.checkCol(3, player2);
+					break;
+	
+			}
 		}
-		
 		if(this.potential == CombinationStatus.OCCUPIED)
 			return false;
 		else
@@ -107,6 +110,7 @@ public class Combination {
 		{
 			if(cell.Row == id)
 			{
+
 				if(!cell.Player.equals(player))
 				{
 					opposite = true;
@@ -195,68 +199,76 @@ public class Combination {
 		switch(this.type)
 		{
 			case DIAGONAL:
-				switch(this.colNo)
+				if(this.colNo != null)
 				{
-					case A:
-						System.out.println( "DIAGONAL - A");
-						ret.add(1);
-						ret.add(2);
-						ret.add(3);
-						
-						break;
-					case C:
-						System.out.println( "DIAGONAL - C");
-						ret.add(3);
-						ret.add(2);
-						ret.add(1);	
-						
-						break;
-					default:
-						break;			
+					switch(this.colNo)
+					{
+						case A:
+							System.out.println( "DIAGONAL - A");
+							ret.add(1);
+							ret.add(2);
+							ret.add(3);
+							
+							break;
+						case C:
+							System.out.println( "DIAGONAL - C");
+							ret.add(3);
+							ret.add(2);
+							ret.add(1);	
+							
+							break;
+						default:
+							break;			
+					}
 				}
 
 				break;
 			case HORIZONTAL:
 				// retci
-
-				System.out.println( "HORIZONTAL - " + this.rowNo);
-						ret.add(1);
-						ret.add(2);
-						ret.add(3);
+				if(this.rowNo != null)
+				{
+					System.out.println( "HORIZONTAL - " + this.rowNo);
+					ret.add(1);
+					ret.add(2);
+					ret.add(3);
+				}
 	
 				break;
 			case VERTICAL:
 				// kolone
-				switch(this.rowNo)
+				
+				if(this.rowNo != null)
 				{
-					case FIRST:
-						System.out.println( "VERTICAL - A");
-						ret.add(1);
-						ret.add(1);
-						ret.add(1);
-						
-						break;
-					case SECOND:
-						System.out.println( "VERTICAL - B" );
-						ret.add(2);
-						ret.add(2);
-						ret.add(2);	
-						
-						break;
-					case THIRD:
-						System.out.println( "VERTICAL	 - C" );
-						ret.add(3);
-						ret.add(3);
-						ret.add(3);	
-						
-						break;
-					default:
-						break;			
+					if(this.rowNo != null)
+					{
+						switch(this.rowNo)
+						{
+							case FIRST:
+								System.out.println( "VERTICAL - A");
+								ret.add(1);
+								ret.add(1);
+								ret.add(1);
+								
+								break;
+							case SECOND:
+								System.out.println( "VERTICAL - B" );
+								ret.add(2);
+								ret.add(2);
+								ret.add(2);	
+								
+								break;
+							case THIRD:
+								System.out.println( "VERTICAL	 - C" );
+								ret.add(3);
+								ret.add(3);
+								ret.add(3);	
+								
+								break;
+							default:
+								break;			
+						}
+					}
 				}
-
-				break;
-			default:
-				break;
 		
 		}
 		
@@ -349,11 +361,32 @@ public class Combination {
 		
 		for(int a = 0; a <= 2; a++)
 		{
-			if(!IsCordinatesInCombination(this.combinationRowKeys.get(a), this.combinationColumnKeys.get(a)))
+			Boolean rowKeyExists = this.combinationRowKeys.size() <= a;
+			Boolean rowColumnExists = this.combinationColumnKeys.size() <= a;
+			if(rowKeyExists &&  rowColumnExists && !IsCordinatesInCombination(this.combinationRowKeys.get(a), this.combinationColumnKeys.get(a)))
 			{
 				ret.add(new Cell(this.combinationRowKeys.get(a), this.combinationColumnKeys.get(a)));
 			}
 		}
 		return ret;
+	}
+
+	public Cell pickAnyCell() {		
+
+		List<Cell> comb = this.GeneratePossibleMoves();
+		if(comb.size() == 0)
+		{
+			return null;
+		}
+		else if(comb.size() == 1)
+		{
+			return comb.get(0);
+		}
+		else
+		{
+			int key = (int)( Math.random() * comb.size() + 1);
+			return comb.get(key);
+		}
+				
 	}
 }
