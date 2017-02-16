@@ -80,7 +80,7 @@ public class GameComputerPlayer {
 		Integer row = (int) ((Math.random() * 3) +1);
 		Integer coll = (int) ((Math.random() * 3) +1);
 
-		System.out.println( "Calculated :" + row + " , " + coll);
+		System.out.println( "Random cell: row :" + row + " , column: " + coll);
 		return new Cell(row, coll, gameId, player);	
 	}	
 	private Cell take5(Player player, Integer gameId)
@@ -125,6 +125,8 @@ public class GameComputerPlayer {
 	
 	private Cell whatICan(Player player, Integer gameId)
 	{
+		
+		System.out.println("What CAN I PLAY");
 		List<Combination> comb = new ArrayList<Combination>();
 		Combination rows1 = new Combination(GameRuleType.HORIZONTAL,GameRowType.FIRST);
 		Combination rows2 = new Combination(GameRuleType.HORIZONTAL,GameRowType.SECOND);
@@ -186,26 +188,61 @@ public class GameComputerPlayer {
 			}
 		}
 
-		if(rows1 != null && rows1.Cells.size() == 0)
-			comb.add(rows1);
-		if(rows2 != null && rows2.Cells.size() == 0)
-			comb.add(rows2);
-		if(rows3 != null && rows3.Cells.size() == 0)	
-			comb.add(rows3);
-		if(columns1 != null && columns1.Cells.size() == 0)	
-			comb.add(columns1);
-		if(columns2 != null && columns2.Cells.size() == 0)	
-			comb.add(columns2);
-		if(columns3 != null && columns3.Cells.size() == 0)	
-			comb.add(columns3);
+		if(rows1 != null)
+		{
+			if(rows1.Cells.size() == 0 || rows1.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer) == CombinationStatus.HASFREE)
+				comb.add(rows1);
+		}
+		if(rows2 != null)
+		{
+			if(rows2.Cells.size() == 0 || rows2.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer) == CombinationStatus.HASFREE)
+				comb.add(rows2);
+
+		}
+		if(rows3 != null)	
+		{
+			if(rows3.Cells.size() == 0 || rows3.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer) == CombinationStatus.HASFREE)
+				comb.add(rows3);
+		}
+		
+		if(columns1 != null)	
+		{
+			if(columns1.Cells.size() == 0 || columns1.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer) == CombinationStatus.HASFREE)
+				comb.add(columns1);
+		}
+		
+		if(columns2 != null)	
+		{
+			if(columns2.Cells.size() == 0 || columns2.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer) == CombinationStatus.HASFREE)
+				comb.add(columns2);
+		}
+		
+		if(columns3 != null)	
+		{
+			if(columns3.Cells.size() == 0 || columns3.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer) == CombinationStatus.HASFREE)
+				comb.add(columns3);
+		}
+		
 		if(diagonal1 != null && diagonal1.Cells.size() == 0)	
-			comb.add(diagonal1);
+		{
+			if(diagonal1.Cells.size() == 0 || diagonal1.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer) == CombinationStatus.HASFREE)
+				comb.add(diagonal1);
+		}
+		
 		if(diagonal2 != null && diagonal2.Cells.size() == 0)	
-			comb.add(diagonal2);
+		{
+
+			if(diagonal2.Cells.size() == 0 || diagonal2.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer) == CombinationStatus.HASFREE )
+				comb.add(diagonal2);
+		}
+		
 
 		System.out.println("Broj mogućih kombinacija : " + comb.size());
 		Combination combination = this.pickAnyCombination(comb);
 		
+		
+
+		System.out.println("broj poteza: " + combination.Cells.size());
 		Cell cell = combination.pickAnyCell();
 		if(cell != null)
 			return cell;
@@ -219,12 +256,19 @@ public class GameComputerPlayer {
 	private Combination pickAnyCombination(List<Combination> comb) {
 		// TODO Auto-generated method stub
 		if(comb.size() == 0)
+		{
+			System.out.println("pickAnyCombination :  NULL)");
 			return null;
+		}
 		else if(comb.size() == 1)
+		{
+			System.out.println("pickAnyCombination :  " + comb.get(0));
 			return comb.get(0);
+		}
 		else
 		{
 			int key = (int)(Math.random() * comb.size());
+			System.out.println("pickAnyCombination :  " + comb.get(key));
 			return comb.get(key);
 		}
 				
@@ -241,10 +285,17 @@ public class GameComputerPlayer {
 		this.oCombinationsList.clear();
 		for(Combination comb : this.game._fillCells2Combination())
 		{
-			if(comb.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer))
+			if(comb.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer)  != CombinationStatus.OCCUPIED)
+			{	
+				System.out.println("Dodajem opciju za protivnika: "  + comb.type + ", Red: " + comb.rowNo+ " , Kolona: " + comb.colNo );
 				oCombinationsList.add(comb);
-			if(comb.checkCombination(this.game.CurrentPlayer, this.game.GetOppositePlayer()))
+				
+			}
+			if(comb.checkCombination(this.game.CurrentPlayer, this.game.GetOppositePlayer())  != CombinationStatus.OCCUPIED)
+			{	
+				System.out.println("Dodajem opciju za trenutnog igrača: "  + comb.type + ", Red: " + comb.rowNo+ " , Kolona: " + comb.colNo );
 				combinationsList.add(comb);
+			}
 		}
 		
 	}

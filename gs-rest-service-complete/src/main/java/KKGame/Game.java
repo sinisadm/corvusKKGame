@@ -58,7 +58,7 @@ public class Game {
 		this.Player2 = _player2;
 		_gameInProggress();
 
-		System.out.println("Game created, Id: " + this.GameId + "\\n Prvi igrač: " + this.Player1.Name + ", drugi igrač: " + this.Player2.Name );	
+		System.out.println("Game created, Id: " + this.GameId + "\\n\\n Prvi igrač: " + this.Player1.Name + ",\\n drugi igrač: " + this.Player2.Name + "\\n\\n\\n");	
 	}
 
 	/* *	Public methods	* */ 
@@ -77,17 +77,12 @@ public class Game {
 		Boolean cantBeAdded = this.checkIfCellsCantBeAdded( cell);
 		Boolean isGameOver = false;
 		System.out.println("");
-		System.out.println("PPPPLLLLAAAAYYYY");
+		System.out.println("PLAY");
 		System.out.println("");
 		System.out.println("Limit je prijeđen: " + limit.toString());
 		System.out.println(cell);
 		System.out.println("");
-		System.out.println("");
-		System.out.println("");
-		System.out.println("");
-		System.out.println("");
-		System.out.println("");
-		System.out.println("");
+
 		
 		if (!limit)
 		{	
@@ -98,7 +93,7 @@ public class Game {
 				System.out.println("Added: " + cell.toString() );
 				isGameOver = this._isSomeoneWin();	
 
-				System.out.println("Game Status : " + isGameOver.toString() );
+				System.out.println("Game Is Over : " + isGameOver.toString() );
 				return this.Status;
 			}
 			else
@@ -121,7 +116,7 @@ public class Game {
 			else
 				this.Status = GameStatus.Player2Wins;
 		}
-		else
+/*		else
 		{
 			Player player = this._getCurrentPlayer();
 			if(player.Name.equalsIgnoreCase("computer"))
@@ -129,7 +124,7 @@ public class Game {
 
 			}
 			
-		}
+		}*/
 		Integer size = this.Game.size();
 		System.out.println("Game played, Id: " + this.GameId + "\\n Prvi igrač: " + this.Player1.Name + ", drugi igrač: " + this.Player2.Name + "\\n polja: " + size );	
 		return this.Status;
@@ -140,6 +135,7 @@ public class Game {
 	 * 
 	 */
 	private void _gameFieldNotEmpty() {
+		System.out.println("Game Move not played cause cell is not empty \\n");
 		this.Status = GameStatus.FieldNotEmpty;
 	}
 
@@ -168,10 +164,19 @@ public class Game {
 	
 	public Boolean checkIfCellsCantBeAdded( final Cell cell) {
 		Boolean cantBeAdded = false;
-		if(this.Game.size()> 0 && cell != null)
+		if(this.Game.size()> 0 && cell != null){
+			System.out.println("Odigrano je . " + this.Game.size() + " poteza");
+			for(Cell c : this.Game)
+			{
+				
+				System.out.println("Cell :. " + c.Row + " , "  + c.Column + ", Player: " + c.Player.Name);
+			}
+
 			cantBeAdded = this.Game.stream().filter(c -> c.getRow().equals(cell.getRow()) && c.getColumn().equals(cell.getColumn())).findFirst().isPresent();
 		//this.Game.add(cell);
-		System.out.println("Cant be added   " + cantBeAdded.toString());
+			System.out.println("Provjera da li čelija može biti dodana. " + cell.Row + " , "  + cell.Column + ":  " + cantBeAdded.toString());
+		}
+		System.out.println("Can't be added   " + cantBeAdded.toString());
 	    return cantBeAdded;
 	}
 
@@ -215,8 +220,10 @@ public class Game {
 			return returnValue;
 		}
 		else
-		{		
+		{	
 			this._switchPlayers();
+			if(this.CurrentPlayer.Name.equals("computer"))
+				this._switchPlayers();
 			return returnValue;
 		}
 	}
@@ -238,24 +245,32 @@ public class Game {
 	private void _switchPlayers() {
 
 		System.out.println("Trenutni igrač:  " + this.CurrentPlayer.toString());
-		this.CurrentPlayer = (this.CurrentPlayer == this.Player1) ? this.Player2 : this.Player1;
+		this.CurrentPlayer = (this.Player1 == this.CurrentPlayer ) ? this.Player2 : this.Player1;
 		System.out.println("nakon zamjene je igrač:  " + this.CurrentPlayer.toString());
-		
-		
+		if(this.CurrentPlayer.toString().equals("computer"))
+		{
+			System.out.println("Computer move ******************************************");			
+			this.makeComputerMove();
+
+		}
+		else
+			System.out.println(this.CurrentPlayer.toString());
+		//player.MakeMove(this);
+	}
+
+	/**
+	 * 
+	 */
+	private void makeComputerMove() {
 		/*
 		 * 
 		 * Computer Move
 		 * 
 		 * */	
-		if(this.CurrentPlayer.toString().equals("computer"))
-		{
-			System.out.println("Computer move ******************************************");	
+
 			this.Status = this.Play(this.CurrentPlayer.computer.Hint(this, ComputerSkill.MEDIUM));/**/
-			this._switchPlayers();
-		}
-		else
-			System.out.println(this.CurrentPlayer.toString());
-		//player.MakeMove(this);
+			//this._switchPlayers();
+
 	}
 
 	/**

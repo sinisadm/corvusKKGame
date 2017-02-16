@@ -23,7 +23,10 @@ public class gameBean {
 	public Player CreatePlayer(String name) {
 		for (Player pl : this.Players) {
 			if (pl.Name.matches(name))
+			{	
+				System.out.println("Found Player " + name);
 				return pl;
+			}
 		}
 		return this.NewPlayer(name);
 	}
@@ -80,13 +83,19 @@ public class gameBean {
 			{
 				this.isComputerPlaying = false;
 			}
-
+			
 			this._player1 = this.GetPlayer(first);
-			this.Players.add(this._player1);
+
+			System.out.println("player : " + first + " u statistiku igrača");
+
 			this._player1Name = this._player1.Name;
+
 			this._player2 = this.GetPlayer(second);
-			this.Players.add(this._player2);
+
+			
 			this._player2Name = this._player2.Name;/*	*/
+
+			System.out.println("player : " + second + " u statistiku igrača");
 		}
 
 		if (first == null && second == null) // Ako nije zadan niti jedan igrač
@@ -143,12 +152,13 @@ public class gameBean {
 	protected Game CreateGameInstanceWithCurrentPlayers(Integer GameId) {
 		Game game;
 		game = new Game(this._player1, this._player2, GameId);
+		System.out.println("kreiram Prvu igru, igra id = " + game.GameId.toString());
 		game.CurrentPlayer = this.WhoPlaysFirst();
+		System.out.println("Prvi igra = " + game.CurrentPlayer.toString() );
 		
 		if(game.CurrentPlayer.Name.equals("computer"))
 		{
-
-			System.out.println("Igram umjesto kompjutera" );
+			System.out.println("CreateGameInstanceWithCurrentPlayer: Igram umjesto kompjutera" );
 			game.CurrentPlayer._isComputer = true;
 			game.Status = game.Play(game.CurrentPlayer.computer.Hint(game, ComputerSkill.MEDIUM));/**/
 		}

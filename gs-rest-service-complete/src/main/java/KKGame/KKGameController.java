@@ -136,9 +136,7 @@ public class KKGameController {
 		{
 			game = this.GameProcessor.CreateGameInstanceWithCurrentPlayers(0);
 
-			System.out.println("kreiram Prvu igru, igra id = " + game.GameId.toString());
-			System.out.println("Prvi igra = " + game.CurrentPlayer.toString() );
-			System.out.println( );
+			System.out.println("Igra " + game.GameId + ", Status: " + game.Status  );
 			System.out.println( );
 		}
 		else
