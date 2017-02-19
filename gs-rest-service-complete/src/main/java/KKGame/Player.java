@@ -59,6 +59,7 @@ public class Player {
 
 	public void Draw() {
 		this.Draw++;
+		System.out.println("Draw");
 		
 	}
 

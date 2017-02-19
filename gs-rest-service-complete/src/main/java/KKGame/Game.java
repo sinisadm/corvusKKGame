@@ -14,6 +14,7 @@ public class Game {
 	public final Player Player1;
 	public final Player Player2;
 	public GameStatus Status;
+	public Player Winner;
 	
 	public Player CurrentPlayer = null;
 
@@ -76,25 +77,21 @@ public class Game {
 		Boolean limit = this._checkCellsLimit();
 		Boolean cantBeAdded = this.checkIfCellsCantBeAdded( cell);
 		Boolean isGameOver = false;
-		System.out.println("");
-		System.out.println("PLAY");
-		System.out.println("");
-		System.out.println("Limit je prijeđen: " + limit.toString());
-		System.out.println(cell);
-		System.out.println("");
 
-		
 		if (!limit)
 		{	
 			if(!cantBeAdded)
 			{
 				this.Game.add(cell);
-				this._gameInProggress();
 				System.out.println("Added: " + cell.toString() );
+				for(Cell c : this.Game)
+					System.out.println(c.Row + " - " + c.Column + " : " + c.Player.Name);
+				this._gameInProggress();
+			//	
 				isGameOver = this._isSomeoneWin();	
 
-				System.out.println("Game Is Over : " + isGameOver.toString() );
-				return this.Status;
+				//System.out.println("Game Is Over : " + isGameOver.toString() );
+
 			}
 			else
 			{
@@ -104,6 +101,7 @@ public class Game {
 		}
 		else
 		{
+			
 			this.Status = GameStatus.Finished;
 			//return this.Status;
 			
@@ -111,7 +109,7 @@ public class Game {
 		
 		if(isGameOver)
 		{
-			if(this.CurrentPlayer == this.Player1)		
+			if(this.Winner != null && this.Winner == this.Player1)		
 				this.Status = GameStatus.Player1Wins;
 			else
 				this.Status = GameStatus.Player2Wins;
@@ -126,7 +124,7 @@ public class Game {
 			
 		}*/
 		Integer size = this.Game.size();
-		System.out.println("Game played, Id: " + this.GameId + "\\n Prvi igrač: " + this.Player1.Name + ", drugi igrač: " + this.Player2.Name + "\\n polja: " + size );	
+//		System.out.println("Game played, Id: " + this.GameId + "\\n Prvi igrač: " + this.Player1.Name + ", drugi igrač: " + this.Player2.Name + "\\n polja: " + size );	
 		return this.Status;
 
 	}
@@ -165,32 +163,31 @@ public class Game {
 	public Boolean checkIfCellsCantBeAdded( final Cell cell) {
 		Boolean cantBeAdded = false;
 		if(this.Game.size()> 0 && cell != null){
-			System.out.println("Odigrano je . " + this.Game.size() + " poteza");
-			for(Cell c : this.Game)
+		/*	for(Cell c : this.Game)
 			{
 				
-				System.out.println("Cell :. " + c.Row + " , "  + c.Column + ", Player: " + c.Player.Name);
-			}
+			//	System.out.println("Cell :. " + c.Row + " , "  + c.Column + ", Player: " + c.Player.Name);
+			}*/
 
 			cantBeAdded = this.Game.stream().filter(c -> c.getRow().equals(cell.getRow()) && c.getColumn().equals(cell.getColumn())).findFirst().isPresent();
-		//this.Game.add(cell);
-			System.out.println("Provjera da li čelija može biti dodana. " + cell.Row + " , "  + cell.Column + ":  " + cantBeAdded.toString());
+			System.out.println("Can't be added: " + cell.Row + " - "  + cell.Column + ":  " + cantBeAdded.toString());
 		}
-		System.out.println("Can't be added   " + cantBeAdded.toString());
+
+		System.out.println();
+
 	    return cantBeAdded;
 	}
 
 	private Boolean _isSomeoneWin() {
 		Boolean returnValue = false;
+		Boolean filled = this.Game.size() == 9;
 		Boolean winn = false;
-		Boolean filled = false;
 		
 		List<Combination> comb = _fillCells2Combination();
 		Combination combination = null;
 		
 		for(Combination c : comb)
 		{
-			if(c.Cells.size()== 3)
 			{
 				combination = c;
 				if(combination != null)
@@ -198,34 +195,35 @@ public class Game {
 					if(combination.IsPlayerTheWinner(this.CurrentPlayer))
 					{
 						winn = true;
+						this.Winner = this.CurrentPlayer;
 						this._gameFinished();
 					}
-					filled = this.Game.size() == 9;
+					
 				}
 			}
 		}
 		
 		if(winn)
-		{	returnValue = true;
+		{	
+			returnValue = true;
 			this.CurrentPlayer.Winn();
 			this.GetOppositePlayer().Lose();
 			_gameFinished();
-			return returnValue;
 		}
-		else if(filled)
+		else if(filled && !winn)
 		{
+			returnValue = false;
 			this.CurrentPlayer.Draw();;
 			this.GetOppositePlayer().Draw();;
 			_gameFinished();
-			return returnValue;
 		}
 		else
 		{	
 			this._switchPlayers();
 			if(this.CurrentPlayer.Name.equals("computer"))
 				this._switchPlayers();
-			return returnValue;
 		}
+			return returnValue;
 	}
 
 	/**
@@ -239,43 +237,32 @@ public class Game {
 	 * 
 	 */
 	private void _gameFinished() {
-		this.Status = GameStatus.Finished;
+		if(this.Winner != null) { /* todo   */
+
+			System.out.println("Igra gotova, status:  " + this.Status);
+			this.Status = GameStatus.Finished;
+
+		}
 	}
 
 	private void _switchPlayers() {
 
-		System.out.println("Trenutni igrač:  " + this.CurrentPlayer.toString());
+		//System.out.println("Trenutni igrač:  " + this.CurrentPlayer.toString());
 		this.CurrentPlayer = (this.Player1 == this.CurrentPlayer ) ? this.Player2 : this.Player1;
-		System.out.println("nakon zamjene je igrač:  " + this.CurrentPlayer.toString());
+		//System.out.println("nakon zamjene je igrač:  " + this.CurrentPlayer.toString());
 		if(this.CurrentPlayer.toString().equals("computer"))
 		{
 			System.out.println("Computer move ******************************************");			
 			this.makeComputerMove();
-
 		}
-		else
-			System.out.println(this.CurrentPlayer.toString());
-		//player.MakeMove(this);
 	}
 
-	/**
-	 * 
-	 */
-	private void makeComputerMove() {
-		/*
-		 * 
-		 * Computer Move
-		 * 
-		 * */	
 
-			this.Status = this.Play(this.CurrentPlayer.computer.Hint(this, ComputerSkill.MEDIUM));/**/
-			//this._switchPlayers();
-
+	public void makeComputerMove() {
+			this.Status = this.Play(this.CurrentPlayer.computer.Hint(this, ComputerSkill.MEDIUM));
 	}
 
-	/**
-	 * 
-	 */
+
 	public List<Combination> _fillCells2Combination() {
 		List<Combination> comb = new ArrayList<Combination>();
 		Combination rows1 = null;
@@ -292,21 +279,21 @@ public class Game {
 				if (rows1 == null)
 					rows1 = new Combination(GameRuleType.HORIZONTAL,GameRowType.FIRST);
 
-				rows1.Cells.add(cell);
+				rows1.addCell2CombinationCells(cell);
 				if (cell.Column == 1) {
 					if (columns1 == null)
 						columns1 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
 					if (diagonal1 == null)
 						diagonal1 =new Combination(GameRuleType.DIAGONAL, GameCellType.A);
-					columns1.Cells.add(cell);
-					diagonal1.Cells.add(cell);
+					columns1.addCell2CombinationCells(cell);
+					diagonal1.addCell2CombinationCells(cell);
 				}
 				
 				
 				if (cell.Column == 2) {
 					if (columns2 == null)
 						columns2 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
-					columns2.Cells.add(cell);
+					columns2.addCell2CombinationCells(cell);
 				}
 
 				if (cell.Column == 3) {
@@ -314,21 +301,21 @@ public class Game {
 						columns3 =new Combination(GameRuleType.VERTICAL, GameCellType.C);
 					if (diagonal2 == null)
 						diagonal2 =new Combination(GameRuleType.DIAGONAL, GameCellType.C);
-					columns3.Cells.add(cell);
-					diagonal2.Cells.add(cell);
+					columns3.addCell2CombinationCells(cell);
+					diagonal2.addCell2CombinationCells(cell);
 				}
 			}
 			if (cell.Row == 2) {
 				if (rows2 == null)
 					rows2 = new Combination(GameRuleType.HORIZONTAL,GameRowType.SECOND);
 
-				rows2.Cells.add(cell);
+				rows2.addCell2CombinationCells(cell);
 				if (cell.Column == 1) {
 					
 					if (columns1 == null)
 						columns1 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
 					
-					columns1.Cells.add(cell);
+					columns1.addCell2CombinationCells(cell);
 				}
 				if (cell.Column == 2) {
 					if (columns2 == null)
@@ -337,15 +324,15 @@ public class Game {
 						diagonal1 =new Combination(GameRuleType.DIAGONAL, GameCellType.A);
 					if (diagonal2 == null)
 						diagonal2 =new Combination(GameRuleType.DIAGONAL, GameCellType.C);
-					columns2.Cells.add(cell);
-					diagonal1.Cells.add(cell);
-					diagonal2.Cells.add(cell);
+					columns2.addCell2CombinationCells(cell);
+					diagonal1.addCell2CombinationCells(cell);
+					diagonal2.addCell2CombinationCells(cell);
 				}
 
 				if (cell.Column == 3) {
 					if (columns3 == null)
 						columns3 =new Combination(GameRuleType.VERTICAL, GameCellType.C);
-					columns3.Cells.add(cell);
+					columns3.addCell2CombinationCells(cell);
 				}
 
 			}
@@ -353,20 +340,20 @@ public class Game {
 				if (rows3 == null)
 					rows3 = new Combination(GameRuleType.HORIZONTAL,GameRowType.THIRD);
 
-				rows3.Cells.add(cell);
+				rows3.addCell2CombinationCells(cell);
 				if (cell.Column == 1) {
 					if (columns1 == null)
 						columns1 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
 					if (diagonal2 == null)
 						diagonal2 =new Combination(GameRuleType.DIAGONAL, GameCellType.C);
-					columns1.Cells.add(cell);
-					diagonal2.Cells.add(cell);
+					columns1.addCell2CombinationCells(cell);
+					diagonal2.addCell2CombinationCells(cell);
 
 				}
 				if (cell.Column == 2) {
 					if (columns2 == null)
 						columns2 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
-					columns2.Cells.add(cell);
+					columns2.addCell2CombinationCells(cell);
 				}
 
 				if (cell.Column == 3) {
@@ -374,85 +361,31 @@ public class Game {
 						columns3 =new Combination(GameRuleType.VERTICAL, GameCellType.C);
 					if (diagonal1 == null)
 						diagonal1 =new Combination(GameRuleType.DIAGONAL, GameCellType.A);
-					columns3.Cells.add(cell);
-					diagonal1.Cells.add(cell);
+					columns3.addCell2CombinationCells(cell);
+					diagonal1.addCell2CombinationCells(cell);
 				}
 			}
 		}
 
-		if(rows1 != null && rows1.Cells.size() > 0)
+		if(rows1 != null && rows1.getCells().size() > 0)
 			comb.add(rows1);
-		if(rows2 != null && rows2.Cells.size() > 0)
+		if(rows2 != null && rows2.getCells().size() > 0)
 			comb.add(rows2);
-		if(rows3 != null && rows3.Cells.size() > 0)	
+		if(rows3 != null && rows3.getCells().size() > 0)	
 			comb.add(rows3);
-		if(columns1 != null && columns1.Cells.size() > 0)	
+		if(columns1 != null && columns1.getCells().size() > 0)	
 			comb.add(columns1);
-		if(columns2 != null && columns2.Cells.size() > 0)	
+		if(columns2 != null && columns2.getCells().size() > 0)	
 			comb.add(columns2);
-		if(columns3 != null && columns3.Cells.size() > 0)	
+		if(columns3 != null && columns3.getCells().size() > 0)	
 			comb.add(columns3);
-		if(diagonal1 != null && diagonal1.Cells.size() > 0)	
+		if(diagonal1 != null && diagonal1.getCells().size() > 0)	
 			comb.add(diagonal1);
-		if(diagonal2 != null && diagonal2.Cells.size() > 0)	
+		if(diagonal2 != null && diagonal2.getCells().size() > 0)	
 			comb.add(diagonal2);
 		
 
 		System.out.println("Combination size::  " + comb.size());
 		return comb;
 	}
-
-	/*
-	 * 
-	 * 
-	 * 
-	 * 
-	 * /*
-	 * 
-	 * 
-	 * 
-	 * Old methods idea private void gameStatistic() {
-	 * this.ChecbkIfStartedGameExist(); this.GetPlayerConfiguration();
-	 * this.GetPlayingMode(); }
-	 * 
-	 * private void GetPlayingMode() { // TODO Auto-generated method stub
-	 * 
-	 * }
-	 * 
-	 * private void GetPlayerConfiguration() { // TODO Auto-generated method
-	 * stub
-	 * 
-	 * }
-	 * 
-	 * private void CheckIfStartedGameExist() { // TODO Auto-generated method
-	 * stub
-	 * 
-	 * }
-	 * 
-	 * public void gameTurn(){
-	 * 
-	 * this.ExecuteMove(); this.CheckIfGameIsEnded(); }
-	 * 
-	 * private void CheckIfGameIsEnded() {
-	 * 
-	 * 
-	 * }
-	 * 
-	 * private void ExecuteMove() {
-	 * 
-	 * }
-	 * 
-	 * public void gameEnd() {
-	 * 
-	 * }
-	 * 
-	 * public void GamesStatistic() { this.CurrentGameStatistic();
-	 * this.AlGamesStatistic(); }
-	 * 
-	 * private void CurrentGameStatistic() { // TODO Auto-generated method stub
-	 * 
-	 * }
-	 * 
-	 * private void AlGamesStatistic() { this.gameStatistic(); }
-	 */
 }

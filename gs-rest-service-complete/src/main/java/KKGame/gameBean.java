@@ -44,6 +44,18 @@ public class gameBean {
 	public Game GetGameById(Integer gameId) {
 		return this.Statistics.get(gameId);
 	}
+	public gameBean() {
+		super();
+		if(this.Statistics.size() == 0)
+		{	
+			this.GetPlayer("computer");
+			this.GetPlayer("Sina");
+		}
+	}
+
+	public List<Player> getAllPlayers() {
+		return this.Players;
+	}
 	
 	protected Game GetLastGame() {
 		return this.Statistics.get(this.Statistics.lastIndexOf(Statistics) );
@@ -52,9 +64,7 @@ public class gameBean {
 
 	protected Game getGameById(Integer id) {
 		Game game = null;
-		
-		System.out.println("traženi gameId = :" + id.toString() );
-		System.out.println("Statistika sadrži : " + this.Statistics.size() + " igara" );
+
 		if(id >= 0)
 			game = this.Statistics.get(id);
 		
@@ -69,7 +79,9 @@ public class gameBean {
 	 * @param first
 	 * @param second
 	 */
-	protected void _parseUrl2players(String first, String second) {
+	protected void _parseUrl2players(String first, String second, Boolean forceTest) {
+		
+
 		if (first != null && second != null) // Ako su zadaba oba igraća
 		{
 			if (first == "computer" || second == "computer") // I jedan od njih
@@ -86,7 +98,7 @@ public class gameBean {
 			
 			this._player1 = this.GetPlayer(first);
 
-			System.out.println("player : " + first + " u statistiku igrača");
+			System.out.println("Dodajem : " + first + " u statistiku igrača");
 
 			this._player1Name = this._player1.Name;
 
@@ -122,7 +134,7 @@ public class gameBean {
 	
 		for (Player player : this.Players) {
 			if (player.Name.matches(name))  {
-				//System.out.println("Igrač pronađen = " + player.toString() + ", " + name);
+				//System.out.println("Player found = " + player.toString() + ", " + name);
 				return player;
 			}
 		}
@@ -151,6 +163,8 @@ public class gameBean {
 	 */
 	protected Game CreateGameInstanceWithCurrentPlayers(Integer GameId) {
 		Game game;
+		if(GameId== null)
+			GameId=-1;
 		game = new Game(this._player1, this._player2, GameId);
 		System.out.println("kreiram Prvu igru, igra id = " + game.GameId.toString());
 		game.CurrentPlayer = this.WhoPlaysFirst();
@@ -165,6 +179,25 @@ public class gameBean {
 		this.Statistics.add(game);
 		game.GameId = this.Statistics.size() -1;
 		System.out.println("Statistic size =" + this.Statistics.size());	
+		return game;
+	}
+
+	public PlayerStatisticDataTable GetPlayerStatisticDataTable() {
+		return new PlayerStatisticDataTable(0, this.Players.size(), this.Players.size(), this.Players);
+	}
+
+	public Game TestGame(String p1, String p2) {
+		// TODO Auto-generated method stub
+		
+		this._parseUrl2players(p1, p2, true);
+		Game game = this.CreateGameInstanceWithCurrentPlayers(null);
+		System.out.println(game.CurrentPlayer.Name);
+		if(game.CurrentPlayer.Name == "computer") {
+			game.makeComputerMove();
+			System.out.println("Test computer move");
+		}
+		Cell cell = new Cell(1,1,game.GameId, game.CurrentPlayer);
+		game.Play(cell);
 		return game;
 	}
 }

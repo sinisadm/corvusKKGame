@@ -57,12 +57,11 @@ public class KKGameController {
 
 		if (gameId == null || row == null || column == null)
 		{
-			System.out.println("Nešto je null" );
+			System.out.println("Some of required switches missing" );
 			return null;
 		}
 		// Get game
 		GameId = Integer.decode(gameId);
-		System.out.println(" Play, Gameid: " + gameId );
 		Game = this.GameProcessor.getGameById(GameId);
 
 		Row = Integer.decode(row); 
@@ -96,20 +95,36 @@ public class KKGameController {
 	/************************************************************************
 	 * 
 	 * Status method
-	 * TODO return json
+	 * 
 	 * 
 	 ***********************************************************************/
 	@RequestMapping(value = "/status", method = RequestMethod.GET, produces = { "application/json" })
-	public String status(@RequestParam(value="gameId", defaultValue= "-1")Integer gameId, HttpServletRequest request) {
+	public Game status(@RequestParam(value="gameId", defaultValue= "-1")Integer gameId, HttpServletRequest request) {
 		Game g = this.GameProcessor.GetGameById(gameId);
 		Integer s = this.GameProcessor.Statistics.size();
-		
-		String ret = "";
-		
-		if(g != null)
-			ret+=g.toString();
-		return s.toString() + "   , "+ ret;
+	    
+	    return g;
+
 	}
+	
+	/************************************************************************
+	 * 
+	 * Status players method
+	 * 
+	 * 
+	 ***********************************************************************/
+	@RequestMapping(value = "/statusplayers", method = RequestMethod.GET, produces = { "application/json" })
+	public PlayerStatisticDataTable statusPlayers(@RequestParam(value="gameId", defaultValue= "-1")Integer gameId, HttpServletRequest request) {
+		List<Player> p = this.GameProcessor.getAllPlayers();
+		Integer s = this.GameProcessor.Statistics.size();
+		
+		PlayerStatisticDataTable psdt = this.GameProcessor.GetPlayerStatisticDataTable();
+		
+	    return psdt;
+
+	}
+	
+	
 	/************************************************************************
 	 * 
 	 * New Game method
@@ -125,7 +140,7 @@ public class KKGameController {
 		String second = request.getParameter("second");
 		Game game = null;;
 		// parse players, is computer playing
-		GameProcessor._parseUrl2players(first, second);
+		GameProcessor._parseUrl2players(first, second, false);
 
 		// Create new gane and add it to collection
 		Integer GameId = this.GameProcessor.Statistics.size() -1;
@@ -199,12 +214,31 @@ public class KKGameController {
 	 * 
 	 * Get Players method
 	 * 
-	 * 
 	 ***********************************************************************/
 	@RequestMapping(value = "/getallplayers", method = RequestMethod.GET, produces = { "application/json" })
 	public List<Player> GetAllPlayers(HttpServletRequest request) {
 		return this.GameProcessor.Players;
-
 	}
+	/************************************************************************
+	 * 
+	 * Get All games method
+	 * 
+	 ***********************************************************************/
+	@RequestMapping(value = "/getallgames", method = RequestMethod.GET, produces = { "application/json" })
+	public List<Game> GetAllGames(HttpServletRequest request) {
+		return this.GameProcessor.Statistics;
+	}
+	/************************************************************************
+	 * 
+	 * Test method
+	 * 
+	 ***********************************************************************/
+	@RequestMapping(value = "/test", method = RequestMethod.GET, produces = { "application/json" })
+	public Game Test(HttpServletRequest request) {
 
+		String p1 = "computer";
+		String p2 = "Sina";
+
+		return this.GameProcessor.TestGame(p1,  p2);
+	}
 }
