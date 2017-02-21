@@ -232,7 +232,7 @@ public class KKGameController {
 	 * 
 	 * Test method
 	 * 
-	 ***********************************************************************/
+	 **********************************************************************
 	@RequestMapping(value = "/test", method = RequestMethod.GET, produces = { "application/json" })
 	public Game Test(HttpServletRequest request) {
 
@@ -240,5 +240,5 @@ public class KKGameController {
 		String p2 = "Sina";
 
 		return this.GameProcessor.TestGame(p1,  p2);
-	}
+	}*/
 }

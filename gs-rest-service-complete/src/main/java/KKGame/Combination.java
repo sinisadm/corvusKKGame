@@ -3,6 +3,7 @@ package KKGame;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Combination {
 	
@@ -45,42 +46,40 @@ public class Combination {
 	 * @return the potential
 	 */
 	public CombinationStatus getPotential() {
-		return potential;
+		return computerPotential;
 	}
 
 	/**
 	 * @param potential the potential to set
 	 */
 	public void setPotential(CombinationStatus potential) {
-		this.potential = potential;
+		this.computerPotential = potential;
 	}
 
 	/**
 	 * @return the opositePotential
 	 */
 	public CombinationStatus getOpositePotential() {
-		return opositePotential;
+		return playerPotential;
 	}
 
 	/**
 	 * @param opositePotential the opositePotential to set
 	 */
 	public void setOpositePotential(CombinationStatus opositePotential) {
-		this.opositePotential = opositePotential;
+		this.playerPotential = opositePotential;
 	}
 
-	private CombinationStatus potential;
-	private CombinationStatus opositePotential;
+	private CombinationStatus computerPotential;
+	private CombinationStatus playerPotential;
 	
-	private List<Integer> combinationRowKeys;
-	private List<Integer> combinationColumnKeys;
+	private List<CellCoordinates> combinationCoordinates;
 
-	public List<Integer> getCombinationColumnKeys() {
-		return combinationColumnKeys;
-	}
 
-	public List<Integer> getCombinationRowKeys() {
-		return combinationRowKeys;
+
+
+	public List<CellCoordinates> getCombinationCoordinates() {
+		return combinationCoordinates;
 	}
 
 	/**
@@ -124,25 +123,26 @@ public class Combination {
 
 	}
 
-	public CombinationStatus checkCombination(Player player, Player player2)
-	{
-		if(this.rowNo != null)
+	public CellCoordinates checkCombination(Player player, Player player2)
+	{ 
+		CellCoordinates returnValue = calculatePotentialMovesForCombination(player, player2);
+		//if()
+	/*	if(this.rowNo != null)
 		{
 			switch (this.rowNo)
 			{
 				default:
 					break;
 				case FIRST:
-					this.potential = this.checkRow(1, player);
-					this.opositePotential = this.checkRow(1, player2);
+					returnValue = calculatePotentialMovesForCombination(player, player2);
 					break;
 				case SECOND:
-					this.potential = this.checkRow(2, player);
-					this.opositePotential = this.checkRow(2, player2);
+					this.potential = this.checkCombinationStatus(2, player);
+					this.opponentPotential = this.checkCombinationStatus(2, player2);
 					break;
 				case THIRD:
-					this.potential = this.checkRow(3, player);
-					this.opositePotential = this.checkRow(3, player2);
+					this.potential = this.checkCombinationStatus(3, player);
+					this.opponentPotential = this.checkCombinationStatus(3, player2);
 					break;
 	
 			}
@@ -155,22 +155,100 @@ public class Combination {
 					break;
 				case A:
 					this.potential = this.checkCol(1, player);
-					this.opositePotential = this.checkCol(1, player2);
+					this.opponentPotential = this.checkCol(1, player2);
 					break;
 				case B:
 					this.potential = this.checkCol(2, player);
-					this.opositePotential = this.checkCol(2, player2);
+					this.opponentPotential = this.checkCol(2, player2);
 					break;
 				case C:
 					this.potential = this.checkCol(3, player);
-					this.opositePotential = this.checkCol(3, player2);
+					this.opponentPotential = this.checkCol(3, player2);
 					break;
 	
 			}
-		}
-		return this.potential;
+		}*/
+		return returnValue;
 	}
 
+	/**
+	 * @param player
+	 * @param player2
+	 * @return 
+	 */
+	private CellCoordinates calculatePotentialMovesForCombination(Player player, Player player2) {
+
+		this.CalculateKeys();
+		this.computerPotential = this.checkCombinationStatus(player, player2);
+		this.playerPotential = this.checkCombinationStatus(player2, player);
+		
+		if(this.computerPotential == CombinationStatus.VERY_POTENTIAL || this.computerPotential == CombinationStatus.MUST_DEFFEND)
+		{
+			System.out.println("Very potential schema");
+			System.out.println(this.type + " " + this.rowNo + " " + this.colNo);
+			return this.lastFreeCellInCombination();
+		}
+
+
+		else if(this.computerPotential == CombinationStatus.POTENTIAL)
+		{
+			System.out.println("Potential schema");
+			System.out.println(this.type + " " + this.rowNo + " " + this.colNo);
+			// Get cell 2 make more combinations
+			return this.lastFreeCellInCombination();
+		
+		}
+		
+		return null;
+	}
+
+	private	CellCoordinates lastFreeCellInCombination() {
+		for(CellCoordinates cor: this.combinationCoordinates){
+
+		//	Long potentialIndex =  this.Cells.stream().filter(c -> c.Player.equals(player)).collect(Collectors.counting());
+			
+			if(this.Cells.stream()
+					.filter(	c -> c.Row.equals(cor.getX()) && c.Column.equals(cor.getY())	)
+					.collect(Collectors.counting()) == 0){
+				CellCoordinates cordinates = new CellCoordinates(cor.getX(), cor.getY());
+
+				System.out.println("Very potential schema key");
+				System.out.println(cordinates);
+				return cordinates;
+				}
+		}
+		return null;
+	}/*
+	private ArrayList<ArrayList<Integer>> freeCellsInCombination() {
+		ArrayList<ArrayList<Integer>> listOLists = new ArrayList<ArrayList<Integer>>();
+
+		for(int a = 0; a < 3; a++){
+			int x = this.combinationRowKeys.get(a);
+			int y = this.combinationColumnKeys.get(a);
+			
+
+		//	Long potentialIndex =  this.Cells.stream().filter(c -> c.Player.equals(player)).collect(Collectors.counting());
+			
+			
+			if(this.Cells
+					.stream()
+					.filter(
+							c -> c.Row.equals(x) 
+							&& c.Column.equals(y)
+							)
+					.collect(
+							Collectors.counting()
+							 ) == 0)
+			{
+				ArrayList<Integer> singleList = new ArrayList<Integer>();
+				singleList.add(x);
+				singleList.add(y);
+				listOLists.add( singleList);
+			}
+		}
+		return null;
+	}
+*/
 	/**
 	 * IsCordinatesInCombination method
 	 * 
@@ -194,40 +272,40 @@ public class Combination {
 		return false;
 	}
 	
-	public List<Cell> GeneratePossibleMoves() {
+	public List<CellCoordinates> GeneratePossibleMoves() {
 		this.CalculateKeys();
-		List<Cell> ret = new ArrayList<Cell>();
+		List<CellCoordinates> ret = new ArrayList<CellCoordinates>();
 		Boolean keyExists;
 
 		
 		if(this.type == GameRuleType.HORIZONTAL){
 			System.out.println("Horizontal rule:");
-			System.out.println("Horizontal rule:" + this.combinationRowKeys + "   " + this.combinationColumnKeys);
+			System.out.println("Horizontal rule:" + this.combinationCoordinates + "   ");
 			System.out.println();
 			System.out.println();
-			for(Integer localPos : combinationRowKeys)
+			for(CellCoordinates localPos : combinationCoordinates)
 			{
 				keyExists = this.getCells().stream().filter(p -> p.Row.equals(localPos)).findFirst().isPresent();
 				System.out.println("");
 				
 				
-				if(	 keyExists 	&& !IsCordinatesInCombination(this.combinationRowKeys.get(localPos), this.combinationColumnKeys.get(localPos)))
+				if(	 keyExists 	&& !IsCordinatesInCombination(localPos.getX(), localPos.getY()))
 				{
-					ret.add(new Cell(this.combinationRowKeys.get(localPos ), this.combinationColumnKeys.get(localPos)));
+					ret.add(localPos);
 				}
 			}
 		} else {
 
 			System.out.println("Vertical or Diagonal rule:");
-			System.out.println(this.combinationRowKeys + "   " + this.combinationColumnKeys);
+			System.out.println(this.combinationCoordinates + "   ");
 			System.out.println();
 			System.out.println();
-			for(Integer localPos : combinationColumnKeys)
+			for(CellCoordinates localPos : combinationCoordinates)
 			{
-				keyExists = this.getCells().stream().filter(p -> p.Column.equals(localPos - 1)).findFirst().isPresent();
-				if(	 keyExists 	&& !IsCordinatesInCombination(this.combinationRowKeys.get(localPos - 1), this.combinationColumnKeys.get(localPos - 1)))
+				keyExists = this.getCells().stream().filter(p -> p.Column.equals(localPos.getY())).findFirst().isPresent();
+				if(	 keyExists 	&& !IsCordinatesInCombination(localPos.getX() - 1, localPos.getY() - 1))
 				{
-					ret.add(new Cell(this.combinationRowKeys.get(localPos - 1), this.combinationColumnKeys.get(localPos - 1)));
+					ret.add(localPos);
 				}
 			}
 		}
@@ -235,10 +313,10 @@ public class Combination {
 		return ret;
 	}
 
-	public Cell pickAnyCell() {		
+	public CellCoordinates pickAnyCell() {		
 
 		System.out.println("pick ANY CEKK");
-		List<Cell> comb = this.GeneratePossibleMoves();
+		List<CellCoordinates> comb = this.GeneratePossibleMoves();
 
 		System.out.println("vračam  " + comb);
 		if(comb.size() == 0)
@@ -269,10 +347,10 @@ public class Combination {
 		for(Cell c : this.Cells){
 			System.out.println(c.Player.Name + ": "+ c.Row + " - " + c.Column);
 		}
-		System.out.println("combinationRowKeys: " + this.combinationRowKeys);
-		System.out.println("combinationColumnKeys: " + this.combinationColumnKeys);
-		System.out.println("potential: " + this.potential);
-		System.out.println("opositepotential: " + this.opositePotential);
+		System.out.println("combinationRowKeys: " + this.combinationCoordinates);
+
+		System.out.println("potential: " + this.computerPotential);
+		System.out.println("opositepotential: " + this.playerPotential);
 			System.out.println("");
 			System.out.println("");/**/
 	}
@@ -395,10 +473,10 @@ public class Combination {
 		return ret;		
 	}
 
-	private List<Integer> AvailableCombonationColumnKeys()
+	private List<CellCoordinates> AvailableCombonationCoordinates()
 	{ 
 
-		List<Integer> ret = new ArrayList<Integer>();
+		List<CellCoordinates> ret = new ArrayList<CellCoordinates>();
 		switch(this.type)
 		{
 			case DIAGONAL:
@@ -406,16 +484,16 @@ public class Combination {
 				{
 					case A:
 					//	System.out.println( "Diagonal	 - " + this.colNo );
-						ret.add(3);
-						ret.add(2);
-						ret.add(1);	
+						ret.add(new CellCoordinates(3, 1));
+						ret.add(new CellCoordinates(2, 2));
+						ret.add(new CellCoordinates(1, 3));
 						
 						break;
 					case C:
 					//	System.out.println( "Diagonal	 - " + this.colNo );
-						ret.add(1);
-						ret.add(2);
-						ret.add(3);
+						ret.add(new CellCoordinates(1, 3));
+						ret.add(new CellCoordinates(2, 2));
+						ret.add(new CellCoordinates(3, 1));
 						
 						break;
 					default:
@@ -430,24 +508,23 @@ public class Combination {
 				{
 					case FIRST:
 					//	System.out.println( "HORIZONTAL	 - " + this.rowNo );
-						ret.add(1);
-						ret.add(1);
-						ret.add(1);
+						ret.add(new CellCoordinates(1, 1));
+						ret.add(new CellCoordinates(1, 2));
+						ret.add(new CellCoordinates(1, 3));
 						
 						break;
 					case SECOND:
 					//	System.out.println( "HORIZONTAL	 - " + this.rowNo );
-						ret.add(2);
-						ret.add(2);
-						ret.add(2);	
+						ret.add(new CellCoordinates(2, 1));
+						ret.add(new CellCoordinates(2, 2));
+						ret.add(new CellCoordinates(2, 3));
 						
 						break;
 					case THIRD:
 					//	System.out.println( "HORIZONTAL	 - " + this.rowNo );
-						ret.add(3);
-						ret.add(3);
-						ret.add(3);	
-						
+						ret.add(new CellCoordinates(3, 1));
+						ret.add(new CellCoordinates(3, 2));
+						ret.add(new CellCoordinates(3, 3));
 						break;
 					default:
 						break;			
@@ -456,14 +533,34 @@ public class Combination {
 				break;
 			case VERTICAL:
 				// retci
-			//	System.out.println( "VERTICAL	 - " + this.colNo );
-						ret.add(1);
-						ret.add(2);
-						ret.add(3);
+				switch(this.colNo)
+				{
+					case A:
+					//	System.out.println( "Diagonal	 - " + this.colNo );
+						ret.add(new CellCoordinates(1, 1));
+						ret.add(new CellCoordinates(2, 1));
+						ret.add(new CellCoordinates(3, 1));
+						
+						break;
+						
+					case B:
+					//	System.out.println( "Diagonal	 - " + this.colNo );
+						ret.add(new CellCoordinates(1, 2));
+						ret.add(new CellCoordinates(2, 2));
+						ret.add(new CellCoordinates(3, 2));
+						
+						break;
+						
+					case C:
+					//	System.out.println( "Diagonal	 - " + this.colNo );
+						ret.add(new CellCoordinates(1, 3));
+						ret.add(new CellCoordinates(2, 3));
+						ret.add(new CellCoordinates(3, 3));
+						
+						break;
 
+				}
 				break;
-			default:
-				break;	
 		}
 		
 		return ret;		
@@ -471,52 +568,37 @@ public class Combination {
 	
 	private void CalculateKeys()
 	{
-		this.combinationRowKeys = this.AvailableCombonationRowKeys();
-		this.combinationColumnKeys = this.AvailableCombonationColumnKeys();
+		this.combinationCoordinates = this.AvailableCombonationCoordinates();
 	}
 
 
 	/**
-	 * Check row/col methods
+	 * Check row/coil methods  
 	 * 
 	 * Returns combination status identified by combination row or column
+	 * @param player2 
 	 * 
 	 */
-	private CombinationStatus  checkRow(Integer id, Player player)
+	private CombinationStatus  checkCombinationStatus(Player player, Player player2)
 	{
 		CombinationStatus status = CombinationStatus.EMPTY;
-		Integer playerCount = 0;
-		Boolean opposite = false;
-		for(Cell cell : this.Cells)
-		{
-			if(cell.Row == id)
-			{
 
-				if(!cell.Player.equals(player))
-				{
-					opposite = true;
-					this.opositePotential = CombinationStatus.POTENTIAL;
-				}
-				else
-				{
-					playerCount++;
-				}
-				
-			}
-			//	System.out.println("Kombinacija : " + cell.Row + ", " + cell.Column + ", oznake ");
-		}
-		if(playerCount == 0)
-			status = CombinationStatus.EMPTY;
-		else if(playerCount.equals(1))
-			status = CombinationStatus.POTENTIAL;
-		else if(playerCount.equals(2))
-			status = CombinationStatus.VERY_POTENTIAL;
-		else if(this.Cells.size() < 3)
-			status = CombinationStatus.HASFREE;
+		Long potentialIndex =  this.Cells.stream().filter(c -> c.Player.equals(player)).collect(Collectors.counting());
+		Long opponentpotentialIndex    =  this.Cells.stream().filter(c -> c.Player.equals(player2)).collect(Collectors.counting());
 		
-		//System.out.println(status);
+		if(potentialIndex == 0 && opponentpotentialIndex == 0)
+			status = CombinationStatus.EMPTY;
+		else if(potentialIndex == 1 && opponentpotentialIndex == 0)
+			status = CombinationStatus.POTENTIAL;
+		else if(potentialIndex == 2 && opponentpotentialIndex == 0)
+			status = CombinationStatus.VERY_POTENTIAL;
+		else if(potentialIndex == 0 && opponentpotentialIndex == 1)
+			status = CombinationStatus.OCCUPIED;
+		else if(potentialIndex == 0 && opponentpotentialIndex == 2)
+			status = CombinationStatus.MUST_DEFFEND;
+
 		return status;
-	}
+	}/*
 	private CombinationStatus checkCol(Integer id, Player player)
 	{
 		CombinationStatus status = CombinationStatus.EMPTY;
@@ -546,16 +628,16 @@ public class Combination {
 			return CombinationStatus.VERY_POTENTIAL;
 		return status;
 	}
-
+*/
 	public Cell getRemainingCell(Game game) {
 		Cell cell = null;
 		CalculateKeys();
-		System.out.println(" Get remaining cell : " + this.combinationRowKeys + "    -    " + this.combinationColumnKeys);
+		System.out.println(" Get remaining cell : " + this.combinationCoordinates + "    -    ");
 		for(Cell c : this.Cells)
 			System.out.println(c.Row + " - " + c.Column + " postoji u ugri");
-		for(Integer i = 0; i < this.combinationRowKeys.size(); i++)
+		for(CellCoordinates cellc : this.combinationCoordinates)
 		{
-			cell = new Cell(this.combinationRowKeys.get(i), this.combinationColumnKeys.get(i), game.GameId, game.CurrentPlayer);
+			cell = new Cell(cellc.getX(), cellc.getY(), game.GameId, game.CurrentPlayer);
 			if(!game.checkIfCellsCantBeAdded(cell))
 			{ 
 				System.out.println("Combination: " + this.type + " - " + this.rowNo + " - " + this.colNo);
@@ -565,6 +647,13 @@ public class Combination {
 		}	
 			
 		return null;
+	}
+
+	public void reset() {
+		this.Cells.clear();
+		this.computerPotential = null;
+		this.playerPotential = null;
+		
 	}
 
 }

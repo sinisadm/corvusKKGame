@@ -41,7 +41,7 @@ public abstract class GameRule {
 	public GameRule(GameRuleType horizontal, GameRowType first) {
 		// TODO Auto-generated constructor stub
 	}
-	private Boolean _isObbeyed(Game game)
+	/*private Boolean _isObbeyed(Game game)
 	{
 		switch(this._type)
 		{
@@ -58,7 +58,7 @@ public abstract class GameRule {
 		
 		}
 		return false;
-	}
+	}*/
 	
 	private void _fillGameMap() {
 		this._gameMap.add(new GameMapField(GameRowType.FIRST, GameCellType.A));

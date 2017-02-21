@@ -7,10 +7,10 @@ public class RowRule extends GameRule{
 		// TODO Auto-generated constructor stub
 	}
 	
-	private Boolean _checkRule()
+	/*private Boolean _checkRule()
 	{
 		
 		return false;
-	}
+	}*/
 
 }

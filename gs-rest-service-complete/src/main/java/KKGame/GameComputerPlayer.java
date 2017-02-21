@@ -2,7 +2,6 @@ package KKGame;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -12,18 +11,21 @@ public class GameComputerPlayer {
 	private Integer gameStrategy;
 	private Game game;
 	private Combination LastUsedCombination = null;
-	private List<Combination> combinationsList = new ArrayList<Combination>();
-	private List<Combination> oCombinationsList = new ArrayList<Combination>();
-	private List<Combination> ownVeryPotentialList = new ArrayList<Combination>();
-	private List<Combination> oppositeVeryPotentialList = new ArrayList<Combination>();
-	private List<Combination> ownPotentialList = new ArrayList<Combination>();
-	private List<Combination> oppositePotentialList = new ArrayList<Combination>();
+	private List<Combination> computerCombinationsList = new ArrayList<Combination>();
+	private List<Combination> playerCombinationsList = new ArrayList<Combination>();
+	private List<Combination> computerVeryPotentialList = new ArrayList<Combination>();
+	private List<Combination> playerVeryPotentialList = new ArrayList<Combination>();
+	private List<Combination> computerPotentialList = new ArrayList<Combination>();
+	private List<Combination> playerPotentialList = new ArrayList<Combination>();
+	
+	
 	public Cell Hint(Game game, ComputerSkill skill)
 	{
 		this.game = game;
 		this.gameStage = game.Game.size();
-		this.combinationsList.clear();
-		this.oCombinationsList.clear();
+		this.computerCombinationsList.clear();
+		
+		this.playerCombinationsList.clear();
 		this.fillAllCombinations();
 		Cell cell = null;
 		switch(this.gameStage)
@@ -37,7 +39,7 @@ public class GameComputerPlayer {
 
 				System.out.println( "================================");
 				System.out.println( "");
-				System.out.println( "First move : Random cell");
+				System.out.println( "First move : Take5 or Random cell");
 				System.out.println( "");
 				System.out.println( "================================");
 				return this.randomCell(this.game.CurrentPlayer, this.game.GameId);
@@ -46,7 +48,7 @@ public class GameComputerPlayer {
 			case 1:
 				System.out.println( "================================");
 				System.out.println( "");
-				System.out.println( "Second  move : whatICan");
+				System.out.println( "Second  move : Take5 or whatICan");
 				System.out.println( "");
 				System.out.println( "================================");
 				cell = this.take5(this.game.CurrentPlayer, this.game.GameId);
@@ -119,8 +121,8 @@ public class GameComputerPlayer {
 				}
 				if(cell != null)
 					return cell;
-		if(cell == null)
-			return this.whatICan(this.game.CurrentPlayer, this.game.GameId);
+				if(cell == null)
+					return this.whatICan(this.game.CurrentPlayer, this.game.GameId);
 		
 			
 			case 4:
@@ -131,7 +133,7 @@ public class GameComputerPlayer {
 				System.out.println( "Fifth move : whatICan");
 				System.out.println( "");
 				System.out.println( "================================");
-/*
+
 				this.LastUsedCombination = this.anyCombination(this.game.CurrentPlayer, this.game.GameId);
 				cell = null;
 				if(this.LastUsedCombination != null)
@@ -139,7 +141,7 @@ public class GameComputerPlayer {
 				//  Defense, Any combination, Take 5, 
 				return (cell != null) ? cell : this.whatICan(this.game.CurrentPlayer, this.game.GameId);
 			
-		*/	
+	/*	*/	
 			case 5:
 				// Defense, Any Strike, Take 5
 				// Defense, Any combination, Take 5
@@ -286,7 +288,7 @@ public class GameComputerPlayer {
 		List<Combination> potComb;
 		if(this.LastUsedCombination != null)
 		{		
-			potComb = this.combinationsList.stream().filter(
+			potComb = this.computerCombinationsList.stream().filter(
 			//	p.rowNo.equals(this.LastUsedCombination.rowNo)
 			//	&& p.colNo.equals(this.LastUsedCombination.colNo) 
 				p ->  p.type.equals(this.LastUsedCombination.type)
@@ -353,7 +355,7 @@ public class GameComputerPlayer {
 		System.out.println("Get combination");
 		
 		fillAllCombinations();
-				
+		this.game.analyzeCombinations(player, this.game.GetOppositePlayer());
 		/*
 		 * 
 		 * 	Parse combinations: group combinations by status, and return the most valuable move
@@ -369,35 +371,35 @@ public class GameComputerPlayer {
 		Predicate<Combination> hasVeryPotentialPredicate  = e -> e.getPotential().equals(CombinationStatus.VERY_POTENTIAL);
 				
 
-		Boolean hasOwnPotential = this.combinationsList.stream().filter(hasPotentialPredicate).findFirst().isPresent();
-		Boolean hasOwnVeryPotential = this.combinationsList.stream().filter(hasVeryPotentialPredicate).findFirst().isPresent();
-		Boolean hasOppositePotential = this.oCombinationsList.stream().filter(hasPotentialPredicate).findFirst().isPresent();
-		Boolean hasOppositeVeryPotential = this.oCombinationsList.stream().filter(hasVeryPotentialPredicate).findFirst().isPresent();
+		Boolean hasComputerPotential = this.computerCombinationsList.stream().filter(hasPotentialPredicate).findFirst().isPresent();
+		Boolean hasComputerVeryPotential = this.computerCombinationsList.stream().filter(hasVeryPotentialPredicate).findFirst().isPresent();
+		Boolean hasPlayerPotential = this.playerCombinationsList.stream().filter(hasPotentialPredicate).findFirst().isPresent();
+		Boolean hasPlayerVeryPotential = this.playerCombinationsList.stream().filter(hasVeryPotentialPredicate).findFirst().isPresent();
 
-		if(hasOwnPotential )
-			ownPotentialList = this.combinationsList.stream().filter(hasPotentialPredicate).collect(Collectors.toList());	
-		if(hasOwnVeryPotential )
-			ownVeryPotentialList = this.combinationsList.stream().filter(hasVeryPotentialPredicate).collect(Collectors.toList());	
-		if(hasOppositePotential )
-			oppositePotentialList = this.oCombinationsList.stream().filter(hasPotentialPredicate).collect(Collectors.toList());	
-		if(hasOppositeVeryPotential )
-			oppositeVeryPotentialList = this.oCombinationsList.stream().filter(hasVeryPotentialPredicate).collect(Collectors.toList());		
+		if(hasComputerPotential )
+			computerPotentialList = this.computerCombinationsList.stream().filter(hasPotentialPredicate).collect(Collectors.toList());	
+		if(hasComputerVeryPotential )
+			computerVeryPotentialList = this.computerCombinationsList.stream().filter(hasVeryPotentialPredicate).collect(Collectors.toList());	
+		if(hasPlayerPotential )
+			playerPotentialList = this.playerCombinationsList.stream().filter(hasPotentialPredicate).collect(Collectors.toList());	
+		if(hasPlayerVeryPotential )
+			playerVeryPotentialList = this.playerCombinationsList.stream().filter(hasVeryPotentialPredicate).collect(Collectors.toList());		
 
-		System.out.println("ownPotentialList size= " + ownPotentialList.size());
+		System.out.println("ownPotentialList size= " + computerPotentialList.size());
 	//	ownPotentialList.forEach(c -> c.OutputAll());
-		System.out.println("ownVeryPotentialList size= " + ownVeryPotentialList.size());
+		System.out.println("ownVeryPotentialList size= " + computerVeryPotentialList.size());
 	//	ownVeryPotentialList.forEach(c -> c.OutputAll());
-		System.out.println("oppositePotentialList size= " + oppositePotentialList.size());
+		System.out.println("oppositePotentialList size= " + playerPotentialList.size());
 	//	oppositePotentialList.forEach(c -> c.OutputAll());
-		System.out.println("oppositeVeryPotentialList size= " + oppositeVeryPotentialList.size());
+		System.out.println("oppositeVeryPotentialList size= " + playerVeryPotentialList.size());
 	//	oppositeVeryPotentialList.forEach(c -> c.OutputAll());
 		
-		if(ownVeryPotentialList.size() > 0)
+		if(playerVeryPotentialList.size() > 0)
 		{	
 			System.out.println();
 			System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-			System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-			combination = ownVeryPotentialList.get(0);
+			System.out.println("++++++++++++++++++++Defence++++++++++++++++++++++++++++++++++++++");
+			combination = playerVeryPotentialList.get(0);
 			this.LastUsedCombination = combination;
 			combination.OutputAll();
 			System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
@@ -406,8 +408,21 @@ public class GameComputerPlayer {
 			System.out.println();
 		
 		}
+		else if(computerVeryPotentialList.size() > 0)
+		{	
+			System.out.println();
+			System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println("++++++++++++++Attack++++++++++++++++++++++++++++++++++++++++++++++");
+			combination = computerVeryPotentialList.get(0);
+			this.LastUsedCombination = combination;
+			combination.OutputAll();
+			System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println();
+			System.out.println();
 		
-/*******************
+		}
+/* *
 		
 		
 		
@@ -469,7 +484,7 @@ public class GameComputerPlayer {
         }	
         
         
-        ***********/
+* */
         return combination;
 	}
 	
@@ -478,7 +493,40 @@ public class GameComputerPlayer {
 	{
 		
 		System.out.println("What CAN I PLAY");
-		List<Combination> comb = new ArrayList<Combination>();
+		ArrayList<ArrayList<Integer>> comb = new ArrayList<ArrayList<Integer>>();
+		//comb = proccessCombinationComputerMove();
+		/**
+		 * 	Potencijalni problem
+		 * 
+		 */
+
+		Cell cell = proccessCombinationComputerMove();
+		
+		System.out.println(cell);
+
+	/*	Combination combination = this.pickAnyCombination(comb);
+		
+		if(combination != null)
+		{
+			System.out.println("broj poteza: " + combination.getCells().size());
+			cell = combination.getRemainingCell(this.game);
+			
+			
+		}*/
+		if(cell != null)
+		{
+			return cell;
+		}
+		else
+			return this.randomCell(this.game.CurrentPlayer, this.game.GameId);
+       
+	}
+	/**
+	 * @param comb Empty List<Combination>
+	 * @return List<Combination>
+	 */
+	private Cell proccessCombinationComputerMove() {
+		
 		Combination rows1 = new Combination(GameRuleType.HORIZONTAL,GameRowType.FIRST);
 		Combination rows2 = new Combination(GameRuleType.HORIZONTAL,GameRowType.SECOND);
 		Combination rows3 = new Combination(GameRuleType.HORIZONTAL,GameRowType.THIRD);
@@ -526,7 +574,6 @@ public class GameComputerPlayer {
 				if (cell.Column == 1) {
 					columns1.addCell2CombinationCells(cell);
 					diagonal2.addCell2CombinationCells(cell);
-
 				}
 				if (cell.Column == 2) {
 					columns2.addCell2CombinationCells(cell);
@@ -538,105 +585,195 @@ public class GameComputerPlayer {
 				}
 			}
 		}
-
+		
+		List<Combination> availableCombinations = this.game._fillCells2Combination();
+		List<CellCoordinates> possibleMoves = new ArrayList<CellCoordinates>();
+		
 		if(rows1 != null)
 		{	
-		
-			CombinationStatus row1CheckedCombination = rows1.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
-			if(rows1.getCells().size() != 0 || row1CheckedCombination != CombinationStatus.OCCUPIED)		
+			CellCoordinates move = rows1.checkCombination(this.game.CurrentPlayer, this.game.GetOppositePlayer());
+			possibleMoves.add(move);
+			if(rows1.getPotential() == CombinationStatus.VERY_POTENTIAL )
+			{	System.out.println("play now to win");
+				// play now to win
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+				
+			}
+			else if(rows1.getPotential() == CombinationStatus.MUST_DEFFEND )
+			{	
+				// play now to stay in game
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+			}
+				
+		/*	CombinationStatus row1PlayerCheckedCombination = rows1.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
+			if(rows1.getCells().size() != 0 || row1ComputerCheckedCombination != CombinationStatus.OCCUPIED)		
 			{
 				//rows1.OutputAll();
 				comb.add(rows1);
-			}
+			}*/
 		}
 		if(rows2 != null)
 		{
-			CombinationStatus row2CheckedCombination = rows1.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
+			CellCoordinates move = rows2.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
+			
+			possibleMoves.add(move);
+			if(rows2.getPotential() == CombinationStatus.VERY_POTENTIAL )
+
+			{	System.out.println("play now to win");
+				// play now to win
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+			}
+			else if(rows2.getPotential() == CombinationStatus.MUST_DEFFEND )
+			{	
+				// play now to stay in game
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+			}/*
 			if(rows2.getCells().size() != 0 || row2CheckedCombination != CombinationStatus.OCCUPIED)		
 			{
 				//rows2.OutputAll();
 				comb.add(rows2);
-			}
+			}*/
 
 		}
 		if(rows3 != null)	
 		{
-			CombinationStatus row3CheckedCombination = rows1.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
+			CellCoordinates move = rows3.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
+			possibleMoves.add(move);
+			
+
+			if(rows3.getPotential() == CombinationStatus.VERY_POTENTIAL )
+
+			{	System.out.println("play now to win");	
+				// play now to win
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+			}
+			else if(rows3.getPotential() == CombinationStatus.MUST_DEFFEND )
+			{	
+				// play now to stay in game
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+			}/*
 			if(rows3.getCells().size() != 0 || row3CheckedCombination != CombinationStatus.OCCUPIED)		
 			{
 				//rows3.OutputAll();
 				comb.add(rows3);
-			}
+			}*/
 		}
 		
 		if(columns1 != null)	
 		{
-			CombinationStatus column1CheckedCombination = columns1.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
-			if(columns1.getCells().size() != 0 || column1CheckedCombination != CombinationStatus.OCCUPIED)		
+			CellCoordinates move = columns1.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
+			possibleMoves.add(move);
+
+			if(columns1.getPotential() == CombinationStatus.VERY_POTENTIAL )
+
+			{	System.out.println("play now to win");	
+				// play now to win
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+			}
+			else if(columns1.getPotential() == CombinationStatus.MUST_DEFFEND )
+			{	
+				// play now to stay in game
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+			}/*if(columns1.getCells().size() != 0 || column1CheckedCombination != CombinationStatus.OCCUPIED)		
 			{
 				//columns1.OutputAll();
 				comb.add(columns1);
-			}
+			}*/
 		}
 		
 		if(columns2 != null)	
 		{
-			CombinationStatus column2CheckedCombination = columns2.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
-			if(columns2.getCells().size() != 0 || column2CheckedCombination != CombinationStatus.OCCUPIED)
+			CellCoordinates move = columns2.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
+			possibleMoves.add(move );
+
+			if(columns2.getPotential() == CombinationStatus.VERY_POTENTIAL )
+
+			{	System.out.println("play now to win");	
+				// play now to win
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+			}
+			else if(columns2.getPotential() == CombinationStatus.MUST_DEFFEND )
+			{	
+				// play now to stay in game
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+			}
+			/*if(columns2.getCells().size() != 0 || column2CheckedCombination != CombinationStatus.OCCUPIED)
 			{
 				//columns2.OutputAll();
 				comb.add(columns2);
-			}
+			}*/
 		}
 		
 		if(columns3 != null)	
 		{
-			CombinationStatus column3CheckedCombination = columns3.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
-			if(columns3.getCells().size() != 0 || column3CheckedCombination == CombinationStatus.OCCUPIED)
+			CellCoordinates move = columns3.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
+			possibleMoves.add( move);
+
+			if(columns3.getPotential() == CombinationStatus.VERY_POTENTIAL )
+
+			{	System.out.println("play now to win");	
+				// play now to win
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+			}
+			else if(columns3.getPotential() == CombinationStatus.MUST_DEFFEND )
+			{	
+				// play now to stay in game
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+			}/*if(columns3.getCells().size() != 0 || column3CheckedCombination == CombinationStatus.OCCUPIED)
 			{
 				//columns3.OutputAll();
 				comb.add(columns3);
-			}
+			}*/
 		}
 		
 		if(diagonal1 != null )	
 		{
-			CombinationStatus diagonal1CheckedCombination = diagonal1.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
-			if(diagonal1.getCells().size() != 0 || diagonal1CheckedCombination == CombinationStatus.OCCUPIED)		
+			CellCoordinates move = diagonal1.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
+			possibleMoves.add( move);
+			
+
+			if(diagonal1.getPotential() == CombinationStatus.VERY_POTENTIAL )
+
+			{	System.out.println("play now to win");
+				// play now to win
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+			}
+			else if(diagonal1.getPotential() == CombinationStatus.MUST_DEFFEND )
+			{	
+				// play now to stay in game
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+			}
+			/*if(diagonal1.getCells().size() != 0 || diagonal1CheckedCombination == CombinationStatus.OCCUPIED)		
 			{
 				//diagonal1.OutputAll();
 				comb.add(diagonal1);
-			}
+			}*/
 		}
 		
 		if(diagonal2 != null )	
 		{
-			CombinationStatus diagonal2CheckedCombination = diagonal2.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
-			if(diagonal1.getCells().size() != 0 || diagonal2CheckedCombination == CombinationStatus.OCCUPIED)		
+			CellCoordinates move =  diagonal2.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer);
+			possibleMoves.add(move);
+			
+
+			if(diagonal2.getPotential() == CombinationStatus.VERY_POTENTIAL )
+
+			{	System.out.println("play now to win");	
+				// play now to win
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+			}
+			else if(diagonal2.getPotential() == CombinationStatus.MUST_DEFFEND )
+			{	
+				// play now to stay in game
+				return new Cell(move.getX(), move.getY(), this.game.GameId, this.game.CurrentPlayer);
+			}
+			/*if(diagonal1.getCells().size() != 0 || diagonal2CheckedCombination == CombinationStatus.OCCUPIED)		
 			{
 				//diagonal2.OutputAll();
 				comb.add(diagonal2);
-			}
+			}*/
 		}
-		
-
-		Combination combination = this.pickAnyCombination(comb);
-		Cell cell = null;
-		
-		if(combination != null)
-		{
-			System.out.println("broj poteza: " + combination.getCells().size());
-			cell = combination.getRemainingCell(this.game);
-			
-			
-		}
-		if(cell != null)
-		{
-			return cell;
-		}
-		else
-			return this.randomCell(this.game.CurrentPlayer, this.game.GameId);
-       
+		return null;
 	}
 	
 	
@@ -669,20 +806,20 @@ public class GameComputerPlayer {
 		/*
 		 * Razvrstavanje mogućih kombinacija po potencijalu za oba igrača
 		 * */
-		this.combinationsList.clear();
-		this.oCombinationsList.clear();
+		this.computerCombinationsList.clear();
+		this.playerCombinationsList.clear();
 		for(Combination comb : this.game._fillCells2Combination())
 		{
-			if(comb.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer)  != CombinationStatus.OCCUPIED)
+			if(comb.checkCombination(this.game.GetOppositePlayer(), this.game.CurrentPlayer) != null)
 			{	
 				//System.out.println("Dodajem opciju za protivnika: "  + comb.type + ", Red: " + comb.rowNo+ " , Kolona: " + comb.colNo );
-				oCombinationsList.add(comb);
+				playerCombinationsList.add(comb);
 				
 			}
-			if(comb.checkCombination(this.game.CurrentPlayer, this.game.GetOppositePlayer())  != CombinationStatus.OCCUPIED)
+			if(comb.checkCombination(this.game.CurrentPlayer, this.game.GetOppositePlayer()) != null)
 			{	
 				//System.out.println("Dodajem opciju za trenutnog igrača: "  + comb.type + ", Red: " + comb.rowNo+ " , Kolona: " + comb.colNo );
-				combinationsList.add(comb);
+				computerCombinationsList.add(comb);
 			}
 		}
 		

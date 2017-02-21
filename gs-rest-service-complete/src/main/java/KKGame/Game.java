@@ -5,6 +5,29 @@ import java.util.List;
 
 public class Game {
 
+	/*
+	 * 	Class Game
+	 * 
+	 * 	methods
+	 * 		
+	 * 		Play
+	 * 		_fillCells2Combination
+	 * 		Analyze available combinations
+	 * 			method returns list of lists of integers who represents coordinates 
+	 * 		Make Decision
+	 * 
+	 * 
+	 * */
+
+	private Combination rowFIRST 	= new Combination(GameRuleType.HORIZONTAL , GameRowType.FIRST);
+	private Combination rowSECOND 	= new Combination(GameRuleType.HORIZONTAL , GameRowType.SECOND);
+	private Combination rowTHIRD 	= new Combination(GameRuleType.HORIZONTAL , GameRowType.THIRD);
+	private Combination columnA 	= new Combination(GameRuleType.VERTICAL , GameCellType.A);
+	private Combination columnB 	= new Combination(GameRuleType.VERTICAL , GameCellType.B);
+	private Combination columnC 	= new Combination(GameRuleType.VERTICAL ,  GameCellType.C);
+	private Combination diagonalA 	= new Combination(GameRuleType.DIAGONAL,  GameCellType.A);
+	private Combination diagonalC 	= new Combination(GameRuleType.DIAGONAL ,  GameCellType.C);
+	
 	public Integer GameId;
 
 /*	public Integer getId() {
@@ -151,10 +174,11 @@ public class Game {
 	{
 		return (this.CurrentPlayer == this.Player1) ? this.Player2 : this.Player1;
 	}
+	/*
 	private Player _getCurrentPlayer()
 	{
 		return (this.CurrentPlayer == this.Player1) ? this.Player1 : this.Player2;
-	}
+	}*/
 	private Boolean _checkCellsLimit() {
 	
 		return (this.Game.size() >= 9) ? true : false;
@@ -188,17 +212,14 @@ public class Game {
 		
 		for(Combination c : comb)
 		{
-			{
-				combination = c;
-				if(combination != null)
-				{	
-					if(combination.IsPlayerTheWinner(this.CurrentPlayer))
-					{
-						winn = true;
-						this.Winner = this.CurrentPlayer;
-						this._gameFinished();
-					}
-					
+			combination = c;
+			if(combination != null)
+			{	
+				if(combination.IsPlayerTheWinner(this.CurrentPlayer))
+				{
+					winn = true;
+					this.Winner = this.CurrentPlayer;
+					this._gameFinished();
 				}
 			}
 		}
@@ -264,128 +285,115 @@ public class Game {
 
 
 	public List<Combination> _fillCells2Combination() {
-		List<Combination> comb = new ArrayList<Combination>();
-		Combination rows1 = null;
-		Combination rows2 = null;
-		Combination rows3 = null;
-		Combination columns1 =null;
-		Combination columns2 = null;
-		Combination columns3 = null;
-		Combination diagonal1 = null;
-		Combination diagonal2 = null;
-		
+		resetCombinations();
+		fillCells();
+		return extractPotentialCombinations();
+	}
+
+	/**
+	 * 
+	 */
+	private void fillCells() {
 		for (Cell cell : this.Game) {
 			if (cell.Row == 1) {
-				if (rows1 == null)
-					rows1 = new Combination(GameRuleType.HORIZONTAL,GameRowType.FIRST);
-
-				rows1.addCell2CombinationCells(cell);
+				this.rowFIRST.addCell2CombinationCells(cell);
 				if (cell.Column == 1) {
-					if (columns1 == null)
-						columns1 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
-					if (diagonal1 == null)
-						diagonal1 =new Combination(GameRuleType.DIAGONAL, GameCellType.A);
-					columns1.addCell2CombinationCells(cell);
-					diagonal1.addCell2CombinationCells(cell);
+					this.columnA.addCell2CombinationCells(cell);
+					this.diagonalA.addCell2CombinationCells(cell);
 				}
-				
-				
+
 				if (cell.Column == 2) {
-					if (columns2 == null)
-						columns2 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
-					columns2.addCell2CombinationCells(cell);
+					this.columnB.addCell2CombinationCells(cell);
 				}
 
 				if (cell.Column == 3) {
-					if (columns3 == null)
-						columns3 =new Combination(GameRuleType.VERTICAL, GameCellType.C);
-					if (diagonal2 == null)
-						diagonal2 =new Combination(GameRuleType.DIAGONAL, GameCellType.C);
-					columns3.addCell2CombinationCells(cell);
-					diagonal2.addCell2CombinationCells(cell);
+					this.columnC.addCell2CombinationCells(cell);
+					this.diagonalC.addCell2CombinationCells(cell);
 				}
 			}
 			if (cell.Row == 2) {
-				if (rows2 == null)
-					rows2 = new Combination(GameRuleType.HORIZONTAL,GameRowType.SECOND);
-
-				rows2.addCell2CombinationCells(cell);
+				this.rowSECOND.addCell2CombinationCells(cell);
 				if (cell.Column == 1) {
-					
-					if (columns1 == null)
-						columns1 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
-					
-					columns1.addCell2CombinationCells(cell);
+					this.columnA.addCell2CombinationCells(cell);
 				}
 				if (cell.Column == 2) {
-					if (columns2 == null)
-						columns2 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
-					if (diagonal1 == null)
-						diagonal1 =new Combination(GameRuleType.DIAGONAL, GameCellType.A);
-					if (diagonal2 == null)
-						diagonal2 =new Combination(GameRuleType.DIAGONAL, GameCellType.C);
-					columns2.addCell2CombinationCells(cell);
-					diagonal1.addCell2CombinationCells(cell);
-					diagonal2.addCell2CombinationCells(cell);
+					this.columnB.addCell2CombinationCells(cell);
+					this.diagonalA.addCell2CombinationCells(cell);
+					this.diagonalC.addCell2CombinationCells(cell);
 				}
-
 				if (cell.Column == 3) {
-					if (columns3 == null)
-						columns3 =new Combination(GameRuleType.VERTICAL, GameCellType.C);
-					columns3.addCell2CombinationCells(cell);
+					this.columnC.addCell2CombinationCells(cell);
 				}
 
 			}
 			if (cell.Row == 3) {
-				if (rows3 == null)
-					rows3 = new Combination(GameRuleType.HORIZONTAL,GameRowType.THIRD);
-
-				rows3.addCell2CombinationCells(cell);
+				this.rowTHIRD.addCell2CombinationCells(cell);
 				if (cell.Column == 1) {
-					if (columns1 == null)
-						columns1 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
-					if (diagonal2 == null)
-						diagonal2 =new Combination(GameRuleType.DIAGONAL, GameCellType.C);
-					columns1.addCell2CombinationCells(cell);
-					diagonal2.addCell2CombinationCells(cell);
-
+					this.columnA.addCell2CombinationCells(cell);
+					this.diagonalC.addCell2CombinationCells(cell);
 				}
+				
 				if (cell.Column == 2) {
-					if (columns2 == null)
-						columns2 =new Combination(GameRuleType.VERTICAL, GameCellType.A);
-					columns2.addCell2CombinationCells(cell);
+					this.columnB.addCell2CombinationCells(cell);
 				}
 
 				if (cell.Column == 3) {
-					if (columns3 == null)
-						columns3 =new Combination(GameRuleType.VERTICAL, GameCellType.C);
-					if (diagonal1 == null)
-						diagonal1 =new Combination(GameRuleType.DIAGONAL, GameCellType.A);
-					columns3.addCell2CombinationCells(cell);
-					diagonal1.addCell2CombinationCells(cell);
+					this.columnC.addCell2CombinationCells(cell);
+					this.diagonalA.addCell2CombinationCells(cell);
 				}
 			}
 		}
+	}
 
-		if(rows1 != null && rows1.getCells().size() > 0)
-			comb.add(rows1);
-		if(rows2 != null && rows2.getCells().size() > 0)
-			comb.add(rows2);
-		if(rows3 != null && rows3.getCells().size() > 0)	
-			comb.add(rows3);
-		if(columns1 != null && columns1.getCells().size() > 0)	
-			comb.add(columns1);
-		if(columns2 != null && columns2.getCells().size() > 0)	
-			comb.add(columns2);
-		if(columns3 != null && columns3.getCells().size() > 0)	
-			comb.add(columns3);
-		if(diagonal1 != null && diagonal1.getCells().size() > 0)	
-			comb.add(diagonal1);
-		if(diagonal2 != null && diagonal2.getCells().size() > 0)	
-			comb.add(diagonal2);
-		
+	/**
+	 * 
+	 */
+	private void resetCombinations() {
+		this.rowFIRST.reset();
+		this.rowSECOND.reset();
+		this.rowTHIRD.reset();
+		this.columnA.reset();
+		this.columnB.reset();
+		this.columnC.reset();
+		this.diagonalA.reset();
+		this.diagonalC.reset();
+	}
 
-		System.out.println("Combination size::  " + comb.size());
+	/**
+	 * 
+	 */
+	void analyzeCombinations(Player player1, Player player2) {
+		this.rowFIRST.checkCombination(player1, player2);
+		this.rowSECOND.checkCombination(player1, player2);
+		this.rowTHIRD.checkCombination(player1, player2);
+		this.columnA.checkCombination(player1, player2);
+		this.columnB.checkCombination(player1, player2);
+		this.columnC.checkCombination(player1, player2);
+		this.diagonalA.checkCombination(player1, player2);
+		this.diagonalC.checkCombination(player1, player2);
+	}
+
+	/**
+	 * @return
+	 */
+	private List<Combination> extractPotentialCombinations() {
+		List<Combination> comb = new ArrayList<Combination>();
+		if(this.rowFIRST.getCells().size() > 0)
+			comb.add(this.rowFIRST);
+		if(this.rowSECOND.getCells().size() > 0)
+			comb.add(this.rowSECOND);
+		if(this.rowTHIRD.getCells().size() > 0)	
+			comb.add(this.rowTHIRD);
+		if(this.columnA.getCells().size() > 0)	
+			comb.add(this.columnA);
+		if(this.columnB.getCells().size() > 0)	
+			comb.add(this.columnB);
+		if(this.columnC.getCells().size() > 0)	
+			comb.add(this.columnC);
+		if(this.diagonalA.getCells().size() > 0)	
+			comb.add(this.diagonalA);
+		if(this.diagonalC.getCells().size() > 0)	
+			comb.add(this.diagonalC);
 		return comb;
 	}
 }

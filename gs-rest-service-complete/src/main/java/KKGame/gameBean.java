@@ -186,7 +186,7 @@ public class gameBean {
 		return new PlayerStatisticDataTable(0, this.Players.size(), this.Players.size(), this.Players);
 	}
 
-	public Game TestGame(String p1, String p2) {
+	/*public Game TestGame(String p1, String p2) {
 		// TODO Auto-generated method stub
 		
 		this._parseUrl2players(p1, p2, true);
@@ -199,5 +199,5 @@ public class gameBean {
 		Cell cell = new Cell(1,1,game.GameId, game.CurrentPlayer);
 		game.Play(cell);
 		return game;
-	}
+	}*/
 }
